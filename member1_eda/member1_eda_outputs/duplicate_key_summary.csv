@@ -1,0 +1,5 @@
+table,primary_key,row_count,null_key_rows,distinct_non_null_keys,duplicate_key_rows_beyond_first
+tbl_consumer,consumer_id,499999,0,499999,0
+consumer_user_details,user_id,499999,0,499999,0
+tbl_merchants,merchant_abn,4026,0,4026,0
+transactions,order_id,14195505,0,14195505,0

@@ -1,0 +1,17 @@
+table,column,missing_count,missing_rate
+tbl_consumer,name,0,0.0
+tbl_consumer,address,0,0.0
+tbl_consumer,state,0,0.0
+tbl_consumer,postcode,0,0.0
+tbl_consumer,gender,0,0.0
+tbl_consumer,consumer_id,0,0.0
+consumer_user_details,user_id,0,0.0
+consumer_user_details,consumer_id,0,0.0
+tbl_merchants,name,0,0.0
+tbl_merchants,tags,0,0.0
+tbl_merchants,merchant_abn,0,0.0
+transactions,user_id,0,0.0
+transactions,merchant_abn,0,0.0
+transactions,dollar_value,0,0.0
+transactions,order_id,0,0.0
+transactions,order_datetime,0,0.0

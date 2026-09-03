@@ -1,0 +1,2 @@
+minimum_postcode_number,maximum_postcode_number,rows_requiring_leading_zero_padding
+200,9999,7909
