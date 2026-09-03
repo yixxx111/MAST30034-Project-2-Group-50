@@ -1,0 +1,2 @@
+first_transaction_date,last_transaction_date,observed_dates,expected_calendar_dates,missing_calendar_dates,peak_transaction_date,peak_daily_transaction_count,first_28_day_average_count,last_28_day_average_count,first_to_last_28_day_change
+2021-02-28,2022-10-26,606,606,0,2021-11-26,61237,17601.214285714286,28347.85714285714,0.6105625829386769

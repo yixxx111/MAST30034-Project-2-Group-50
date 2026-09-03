@@ -1,0 +1,23 @@
+{
+  "transaction_rows": 14195505,
+  "consumer_rows": 499999,
+  "merchant_rows": 4026,
+  "core_missing_cells": 0,
+  "duplicate_order_id_rows": 0,
+  "unknown_user_transaction_rows": 0,
+  "unknown_merchant_transaction_rows": 580830,
+  "distinct_unknown_merchant_abns": 396,
+  "amount_mean": 166.2289539089161,
+  "amount_median": 62.23040315865482,
+  "amount_p99": 1619.2727559488073,
+  "amount_max": 105193.88578925544,
+  "tag_parse_rate": 1.0,
+  "first_transaction_date": "2021-02-28",
+  "last_transaction_date": "2022-10-26",
+  "missing_calendar_dates": 0,
+  "peak_transaction_date": "2021-11-26",
+  "peak_daily_transaction_count": 61237,
+  "first_to_last_28_day_change": 0.6105625829386769,
+  "latest_snapshot_folder": "transactions_20220228_20220828_snapshot",
+  "latest_partition_date": "2022-10-26"
+}

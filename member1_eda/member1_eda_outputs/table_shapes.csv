@@ -1,0 +1,7 @@
+table,rows,columns,scope
+tbl_consumer,499999,6,Member 1 core
+consumer_user_details,499999,2,Member 1 core
+tbl_merchants,4026,3,Member 1 core
+transactions,14195505,5,Member 1 core
+consumer_fraud_probability,34864,3,Member 3 / catalogued only
+merchant_fraud_probability,114,3,Member 3 / catalogued only
