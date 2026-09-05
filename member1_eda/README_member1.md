@@ -28,6 +28,7 @@ This deliverable completes Member 1's Sprint 1 data validation and exploratory a
 2. Merchant tags use inconsistent case and bracket styles. A derived, normalised category is used for EDA while raw tags remain intact.
 3. Postcodes should be stored as zero-padded four-character strings.
 4. `transactions_20220228_20220828_snapshot` contains partitions through **2022-10-26**, beyond the date in its folder name. ETL logic should rely on the partition value and record this source inconsistency.
+5. The time-series figure includes a monthly GMV bar chart alongside the daily trend lines. February 2021 and October 2022 are partial months and are shown in grey.
 
 ## Files
 
