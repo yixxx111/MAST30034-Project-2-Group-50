@@ -24,7 +24,7 @@ This deliverable completes Member 1's Sprint 1 data validation and exploratory a
 
 ## Important data-quality observations
 
-1. Transaction amounts are right-skewed. The amount figure shows both the original distribution capped at the 99th percentile and a `log1p`-transformed full plotting sample. The raw amount remains unchanged and no records were removed.
+1. Transaction amounts are right-skewed. The amount figure shows both the original distribution capped at the 99th percentile and a `log1p`-transformed full plotting sample whose ticks are labelled in original AUD amounts. The raw amount remains unchanged and no records were removed.
 2. Merchant tags use inconsistent case and bracket styles. A derived, normalised category is used for EDA while raw tags remain intact.
 3. Postcodes should be stored as zero-padded four-character strings.
 4. `transactions_20220228_20220828_snapshot` contains partitions through **2022-10-26**, beyond the date in its folder name. ETL logic should rely on the partition value and record this source inconsistency.
