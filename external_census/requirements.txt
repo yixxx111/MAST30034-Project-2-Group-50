@@ -1,0 +1,9 @@
+# Python 3.12 or 3.13; versions used for this verified delivery (Python 3.13.2).
+pandas==2.2.3
+numpy==2.5.3
+duckdb==1.5.5
+matplotlib==3.11.2
+pytest==9.1.1
+nbformat==5.10.4
+nbclient==0.10.2
+ipykernel==6.29.5

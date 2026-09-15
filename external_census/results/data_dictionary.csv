@@ -1,0 +1,42 @@
+field,source,definition,unit
+postcode,POA_CODE_2021,4-character POA-derived postcode; preserve leading zeros,string
+poa_code,POA_CODE_2021,Normalised ABS POA key,string
+census_population,2021Census_G01_AUST_POA.csv :: Tot_P_P,"Total persons, usual residence",count
+census_median_age,2021Census_G02_AUST_POA.csv :: Median_age_persons,Median age of persons,years
+census_median_household_income_weekly,2021Census_G02_AUST_POA.csv :: Median_tot_hhd_inc_weekly,Median total household income,AUD/week
+census_avg_household_size,2021Census_G02_AUST_POA.csv :: Average_household_size,Average usual residents per occupied private dwelling,persons/household
+census_couple_no_children_families,2021Census_G29_AUST_POA.csv :: CF_no_children_F,Couple families without children,count
+census_couple_with_children_families,2021Census_G29_AUST_POA.csv :: CF_Total_F,Couple families WITH children; excludes childless couples,count
+census_single_parent_families,2021Census_G29_AUST_POA.csv :: OPF_Total_F,One-parent families,count
+census_other_families,2021Census_G29_AUST_POA.csv :: Other_family_F,Other families,count
+census_total_families,2021Census_G29_AUST_POA.csv :: Total_F,Total families in occupied private dwellings,count
+census_employed_persons,2021Census_G46B_AUST_POA.csv :: P_Tot_Emp_Tot,Employed persons aged 15+,count
+census_unemployed_persons,2021Census_G46B_AUST_POA.csv :: P_Tot_Unemp_Tot,Unemployed persons aged 15+,count
+census_labour_force,2021Census_G46B_AUST_POA.csv :: P_Tot_LF_Tot,Persons aged 15+ in labour force,count
+census_not_in_labour_force,2021Census_G46B_AUST_POA.csv :: P_Not_in_LF_Tot,Persons aged 15+ outside labour force,count
+census_labour_status_not_stated,2021Census_G46B_AUST_POA.csv :: P_LFS_NS_Tot,Persons aged 15+ with labour force status not stated,count
+census_population_15plus,2021Census_G46B_AUST_POA.csv :: P_Tot_Tot,"All persons aged 15+, including labour status not stated",count
+census_family_households,2021Census_G42_AUST_POA.csv :: Tot_FHs_Tot,Family households,count
+census_lone_person_households,2021Census_G42_AUST_POA.csv :: Tot_Lone_P_H,Lone-person households,count
+census_group_households,2021Census_G42_AUST_POA.csv :: Tot_Group_H,Group households,count
+census_total_households,2021Census_G42_AUST_POA.csv :: Tot_Tot,Total classified occupied private dwellings,count
+census_employment_to_population_ratio,census_employed_persons / census_population_15plus,"Null for missing input, zero denominator or ratio outside [0,1]; never clipped",proportion 0-1
+census_unemployment_rate,census_unemployed_persons / census_labour_force,"Null for missing input, zero denominator or ratio outside [0,1]; never clipped",proportion 0-1
+census_labour_force_participation_rate,census_labour_force / census_population_15plus,"Null for missing input, zero denominator or ratio outside [0,1]; never clipped",proportion 0-1
+census_couple_no_children_family_share,census_couple_no_children_families / census_total_families,"Null for missing input, zero denominator or ratio outside [0,1]; never clipped",proportion 0-1
+census_couple_with_children_family_share,census_couple_with_children_families / census_total_families,"Null for missing input, zero denominator or ratio outside [0,1]; never clipped",proportion 0-1
+census_couple_family_share,census_couple_families / census_total_families,"Null for missing input, zero denominator or ratio outside [0,1]; never clipped",proportion 0-1
+census_single_parent_family_share,census_single_parent_families / census_total_families,"Null for missing input, zero denominator or ratio outside [0,1]; never clipped",proportion 0-1
+census_family_household_share,census_family_households / census_total_households,"Null for missing input, zero denominator or ratio outside [0,1]; never clipped",proportion 0-1
+census_lone_person_household_share,census_lone_person_households / census_total_households,"Null for missing input, zero denominator or ratio outside [0,1]; never clipped",proportion 0-1
+census_group_household_share,census_group_households / census_total_households,"Null for missing input, zero denominator or ratio outside [0,1]; never clipped",proportion 0-1
+census_source_year,derived,Census reference year 2021,year
+census_couple_families,derived,Couple families with and without children summed,count
+census_small_population,derived,"Denominator below 30; review flag, not an exclusion rule",boolean
+census_small_labour_force,derived,"Denominator below 30; review flag, not an exclusion rule",boolean
+census_small_families,derived,"Denominator below 30; review flag, not an exclusion rule",boolean
+census_small_households,derived,"Denominator below 30; review flag, not an exclusion rule",boolean
+census_nonpositive_household_income,derived,"Reported income is zero or negative; retained for review, not assumed missing",boolean
+census_zero_population,derived,Reported population is zero,boolean
+census_any_feature_missing,derived,At least one numeric clean feature is unavailable,boolean
+census_ratio_quality_issue,derived,"At least one derived ratio falls outside [0,1]",boolean

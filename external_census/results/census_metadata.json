@@ -1,0 +1,67 @@
+{
+  "stage": "external_census",
+  "schema_version": 1,
+  "source_year": 2021,
+  "created_utc": "2026-09-15T05:06:27.085471+00:00",
+  "source_filename": "2021_GCP_POA_for_AUS_short-header.zip",
+  "source_sha256": "ccca4c72ee769d81c13dd6cfaedff7df58819267384195118f3d3b87d6c64008",
+  "source_members": [
+    {
+      "table": "G01",
+      "member": "2021 Census GCP Postal Areas for AUS/2021Census_G01_AUST_POA.csv",
+      "sha256": "082fa6b868a085ba0676e0af584d26b524aa006a394eb13a3ded8c6dad74d34a"
+    },
+    {
+      "table": "G02",
+      "member": "2021 Census GCP Postal Areas for AUS/2021Census_G02_AUST_POA.csv",
+      "sha256": "6075a012e9798214474bb7e8bc323dc85fbc0529e78b205abb85c799421481ce"
+    },
+    {
+      "table": "G29",
+      "member": "2021 Census GCP Postal Areas for AUS/2021Census_G29_AUST_POA.csv",
+      "sha256": "5ef6795bb9f31db93549fc66685625cd96b55bc08255e590f46b2c1348538d59"
+    },
+    {
+      "table": "G46B",
+      "member": "2021 Census GCP Postal Areas for AUS/2021Census_G46B_AUST_POA.csv",
+      "sha256": "e6fcc0b870a451e57b309a1ee02f36dc9a69eb23e16efbea5d292f7c7c5f0525"
+    },
+    {
+      "table": "G42",
+      "member": "2021 Census GCP Postal Areas for AUS/2021Census_G42_AUST_POA.csv",
+      "sha256": "f91b6b361f4ff2d1411166ec944cf4e90aafde42fef5e5b27507d9fc034455c4"
+    }
+  ],
+  "clean_rows": 2641,
+  "clean_columns": 41,
+  "consumer_join_status": "completed_consumer_table_only",
+  "transaction_join_status": "not_run",
+  "consumer_source_sha256": "9fe2b21bf5dd2d13a55551f977212abe0eff844b9e47a411ff974d70463d86c1",
+  "versions": {
+    "python": "3.13.2",
+    "pandas": "2.2.3",
+    "numpy": "2.5.3",
+    "duckdb": "1.5.5"
+  },
+  "policies": {
+    "duplicates": "fail, investigate",
+    "invalid_numeric": "cell null; POA retained",
+    "special_geographies": "exclude 9494/9797; audit",
+    "nonpositive_income": "retain and flag; not assumed missing",
+    "zero_age_or_size": "null and audit; conservative analytical policy",
+    "ratios": "null when undefined or outside [0,1]; retain source counts",
+    "outliers": "retain; upper 1% review flags",
+    "small_denominator": "below 30 flag, never exclude",
+    "imputation": "none",
+    "join": "many-to-one left join; no row loss"
+  },
+  "limitations": [
+    "POA approximates postcodes; not all postal delivery codes represented",
+    "2021 area context, not individual consumer attributes",
+    "G29/G42 place of enumeration; G01/G46 usual residence",
+    "G42 excludes visitors-only/other non-classifiable households",
+    "Median household income excludes incompletely stated income and temporarily absent adult members",
+    "ABS perturbation causes non-additivity and unstable small-area ratios",
+    "Historical predictive models must respect source release availability"
+  ]
+}
