@@ -1,0 +1,24 @@
+Source: Australian Bureau of Statistics
+Title: Socio-Economic Indexes for Areas (SEIFA), Australia, 2021
+Data cube: Postal Area, Indexes, SEIFA 2021.xlsx
+Release date: 27 April 2023
+Access date: 15 September 2026
+
+Data page:
+https://www.abs.gov.au/statistics/people/people-and-communities/socio-economic-indexes-areas-seifa-australia/2021
+
+This project uses the attribution for transformed material:
+"Based on Australian Bureau of Statistics data"
+
+Acknowledgement:
+"ABS data used with permission from the Australian Bureau of Statistics"
+
+Unless otherwise noted by ABS, eligible ABS material is provided under the
+Creative Commons Attribution 4.0 International licence:
+https://creativecommons.org/licenses/by/4.0/
+
+ABS citation guidance:
+https://www.abs.gov.au/how-cite-abs-sources
+
+The ABS logo, Commonwealth Coat of Arms, trade marks, unit record data and
+third-party content are not included in this project's derived outputs.

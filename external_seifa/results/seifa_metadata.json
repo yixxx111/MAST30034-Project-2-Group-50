@@ -1,0 +1,40 @@
+{
+  "stage": "external_seifa",
+  "schema_version": 1,
+  "source_year": 2021,
+  "created_utc": "2026-09-15T09:55:02.390242+00:00",
+  "source_filename": "Postal Area, Indexes, SEIFA 2021.xlsx",
+  "source_url": "https://www.abs.gov.au/statistics/people/people-and-communities/socio-economic-indexes-areas-seifa-australia/2021/Postal%20Area%2C%20Indexes%2C%20SEIFA%202021.xlsx",
+  "methodology_url": "https://www.abs.gov.au/methodologies/socio-economic-indexes-areas-seifa-australia-methodology/2021",
+  "source_sha256": "7b001c4a675d8f26c7dd48192ce724a8cba54948124b171058c40ab600edda6c",
+  "clean_rows": 2641,
+  "clean_columns": 59,
+  "all_four_scores_rows": 2624,
+  "partial_score_rows": 3,
+  "no_score_rows": 14,
+  "consumer_join_status": "completed_consumer_table_only",
+  "transaction_join_status": "not_run",
+  "consumer_source_sha256": "9fe2b21bf5dd2d13a55551f977212abe0eff844b9e47a411ff974d70463d86c1",
+  "versions": {
+    "python": "3.12.14",
+    "pandas": "3.0.5",
+    "numpy": "2.5.2"
+  },
+  "policies": {
+    "special_geographies": "exclude 9494/9797 from join dimension; audit separately",
+    "missing_index_scores": "retain ordinary POA; no imputation; distinguish from join failure",
+    "quantiles": "retain official national/state ranks, deciles and percentiles",
+    "scaled_features": "national percentile divided by 100 only; no fitted standardisation",
+    "outliers": "retain all official scores; no trimming or winsorisation",
+    "join": "normalised postcode, many-to-one LEFT JOIN, no row loss"
+  },
+  "limitations": [
+    "SEIFA describes areas, not individual consumers or merchants",
+    "POA is a Census approximation to postal delivery areas",
+    "ABS recommends rankings or quantiles for most analysis rather than raw scores",
+    "Do not interpret score ratios: a score of 1000 is not twice a score of 500",
+    "State ranks are unavailable for Cross Border and Other Territories rows",
+    "SEIFA 2021 is cross-sectional and should not be treated as a time trend",
+    "Model weights must be estimated and validated later; this stage creates features only"
+  ]
+}
