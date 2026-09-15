@@ -1,0 +1,6 @@
+source_table,poa_code,field,raw_value,reason,action
+G02,POA6182,census_median_age,0,zero_median_age_not_interpreted,clean cell set to null; POA retained
+G02,POA2308,census_avg_household_size,0,nonpositive_household_size_not_interpreted,clean cell set to null; POA retained
+G02,POA5950,census_avg_household_size,0,nonpositive_household_size_not_interpreted,clean cell set to null; POA retained
+G02,POA6182,census_avg_household_size,0,nonpositive_household_size_not_interpreted,clean cell set to null; POA retained
+G02,POA6427,census_avg_household_size,0,nonpositive_household_size_not_interpreted,clean cell set to null; POA retained

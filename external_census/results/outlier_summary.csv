@@ -1,0 +1,5 @@
+field,nonmissing_rows,p99,flagged_rows,removed_rows,action
+census_population,2641,64078.79999999994,27,0,retain; upper-tail review only
+census_median_age,2640,61.0,23,0,retain; upper-tail review only
+census_median_household_income_weekly,2641,3176.599999999998,27,0,retain; upper-tail review only
+census_avg_household_size,2637,3.3,24,0,retain; upper-tail review only

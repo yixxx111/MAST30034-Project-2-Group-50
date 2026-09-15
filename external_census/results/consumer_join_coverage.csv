@@ -1,0 +1,6 @@
+scope,metric,rows,denominator,rate
+consumer_rows,matched,416818,499999,0.8336376672753345
+consumer_rows,postcode_not_in_census,83181,499999,0.16636233272466544
+consumer_rows,special_geography,0,499999,0.0
+consumer_rows,missing_or_invalid_postcode,0,499999,0.0
+distinct_valid_postcodes,matched,2640,3167,0.8335964635301547

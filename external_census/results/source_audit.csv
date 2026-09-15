@@ -1,0 +1,6 @@
+source_table,raw_rows,accepted_rows,excluded_rows,invalid_key_rows,special_geography_rows,duplicate_keys,numeric_cells_set_null,source_missing_cells,source_non_numeric_cells,source_nonfinite_cells
+G01,2643,2641,2,0,2,0,0,0,0,0
+G02,2643,2641,2,0,2,0,5,0,0,0
+G29,2643,2641,2,0,2,0,0,0,0,0
+G46B,2643,2641,2,0,2,0,0,0,0,0
+G42,2643,2641,2,0,2,0,0,0,0,0

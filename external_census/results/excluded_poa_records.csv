@@ -1,0 +1,11 @@
+source_table,POA_CODE_2021,Tot_P_P,reason,Median_age_persons,Median_tot_hhd_inc_weekly,Average_household_size,CF_no_children_F,CF_Total_F,OPF_Total_F,Other_family_F,Total_F,P_Tot_Emp_Tot,P_Tot_Unemp_Tot,P_Tot_LF_Tot,P_Not_in_LF_Tot,P_LFS_NS_Tot,P_Tot_Tot,Tot_FHs_Tot,Tot_Lone_P_H,Tot_Group_H,Tot_Tot
+G01,POA9494,52069,no_usual_address,,,,,,,,,,,,,,,,,,
+G01,POA9797,864,migratory_offshore_shipping,,,,,,,,,,,,,,,,,,
+G02,POA9494,,no_usual_address,0,0,0,,,,,,,,,,,,,,,
+G02,POA9797,,migratory_offshore_shipping,40,2250,1.9,,,,,,,,,,,,,,,
+G29,POA9494,,no_usual_address,,,,0,0,0,0,0,,,,,,,,,,
+G29,POA9797,,migratory_offshore_shipping,,,,0,0,0,0,6,,,,,,,,,,
+G46B,POA9494,,no_usual_address,,,,,,,,,10888,2952,13847,16988,15590,46420,,,,
+G46B,POA9797,,migratory_offshore_shipping,,,,,,,,,400,11,405,48,414,863,,,,
+G42,POA9494,,no_usual_address,,,,,,,,,,,,,,,0,0,0,0
+G42,POA9797,,migratory_offshore_shipping,,,,,,,,,,,,,,,0,3,5,6
