@@ -1,10 +1,3 @@
-"""
-The module keeps the supplied source tables immutable.  It read the
-three transaction snapshot folders, applies explicit quality rules, joins the
-internal consumer and merchant tables, and writes a curated transaction fact
-table plus small audit artefacts for the rest of the group.
-"""
-
 from __future__ import annotations
 
 import csv
@@ -19,6 +12,8 @@ from typing import Any
 
 import duckdb
 
+from src.data_quality import build_data_quality_profile
+
 
 class DataQualityError(RuntimeError):
     pass
@@ -31,6 +26,7 @@ class CurationResult:
     merchant_exceptions_path: Path
     join_coverage_path: Path
     snapshot_coverage_path: Path
+    data_quality_profile_path: Path
     input_rows: int
     curated_rows: int
     quarantined_rows: int
@@ -86,6 +82,7 @@ def _reset_output_targets(output_root: Path) -> None:
         "merchant_match_exceptions.csv",
         "join_coverage.csv",
         "snapshot_coverage.csv",
+        "data_quality_profile.csv",
         "curation_metadata.json",
     ):
         target = output_root / filename
@@ -575,6 +572,7 @@ def build_curated_transactions(
                 },
             ],
         )
+        data_quality_profile_path = build_data_quality_profile(output_root_path)
         metadata_path = output_root_path / "curation_metadata.json"
         metadata = {
             "pipeline_stage": "transaction_curation",
@@ -592,6 +590,7 @@ def build_curated_transactions(
                         merchant_exceptions_path,
                         join_coverage_path,
                         snapshot_coverage_path,
+                        data_quality_profile_path,
                         input_rows,
                         curated_rows,
                         quarantined_rows,
@@ -610,6 +609,7 @@ def build_curated_transactions(
             merchant_exceptions_path=merchant_exceptions_path,
             join_coverage_path=join_coverage_path,
             snapshot_coverage_path=snapshot_coverage_path,
+            data_quality_profile_path=data_quality_profile_path,
             input_rows=input_rows,
             curated_rows=curated_rows,
             quarantined_rows=quarantined_rows,
