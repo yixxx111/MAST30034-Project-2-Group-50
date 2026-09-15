@@ -37,4 +37,6 @@ later enrichment to attach consumer or merchant fraud labels. It also retains no
 excluded from the curated output.
 
 Run `curation_summary.ipynb` after the pipeline to present the audit, join coverage,
-snapshot coverage and merchant-match exception summary.
+snapshot coverage and merchant-match exception summary. The pipeline also creates
+`data_quality_profile.csv`, which separates quarantined raw-data issues, merchant
+left-join non-matches, and fraud/external datasets that are not yet integrated.

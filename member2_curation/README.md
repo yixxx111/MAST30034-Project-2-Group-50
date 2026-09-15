@@ -26,7 +26,13 @@ pytest
 ```
 
 The pipeline creates `data/curated/curated_transactions/` as partitioned Parquet, plus
-the audit, quarantine, join-coverage, snapshot-coverage, and merchant-exception files.
+the audit, quarantine, join-coverage, snapshot-coverage, merchant-exception, and
+`data_quality_profile.csv` files.
+
+`data_quality_profile.csv` separates raw invalid/missing records that were quarantined,
+merchant records that became unavailable only after the left join, and future fraud or
+external sources that have not yet been integrated. The final category is a pipeline
+status, not a missing value and never a zero fraud probability.
 
 ## Shared data contract
 
