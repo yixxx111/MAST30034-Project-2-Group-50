@@ -1,0 +1,60 @@
+field,source,definition,unit
+poa_code,derived from postcode,ABS 2021 Postal Area key,string
+postcode,ABS POA code,Four-character postcode-compatible POA key,string
+seifa_irsd_score,ABS Index of Relative Socio-economic Disadvantage table,ABS standardised index score; lower means relatively more disadvantaged,score
+seifa_irsd_national_rank,ABS Index of Relative Socio-economic Disadvantage table,National Rank; low rank means lower index score,rank
+seifa_irsd_national_decile,ABS Index of Relative Socio-economic Disadvantage table,"National Decile; 1 is lowest, 10 highest",integer 1-10
+seifa_irsd_national_percentile,ABS Index of Relative Socio-economic Disadvantage table,"National Percentile; 1 is lowest, 100 highest",integer 1-100
+seifa_irsd_state_rank,ABS Index of Relative Socio-economic Disadvantage table,State Rank; low rank means lower index score,rank
+seifa_irsd_state_decile,ABS Index of Relative Socio-economic Disadvantage table,"State Decile; 1 is lowest, 10 highest",integer 1-10
+seifa_irsd_state_percentile,ABS Index of Relative Socio-economic Disadvantage table,"State Percentile; 1 is lowest, 100 highest",integer 1-100
+seifa_irsd_minimum_sa1_score,ABS Index of Relative Socio-economic Disadvantage table,Minimum contributing SA1 index score,score
+seifa_irsd_maximum_sa1_score,ABS Index of Relative Socio-economic Disadvantage table,Maximum contributing SA1 index score,score
+seifa_irsd_population_without_sa1_score_share,ABS Index of Relative Socio-economic Disadvantage table,Share of usual resident population without an SA1-level score,proportion 0-1
+seifa_irsad_score,ABS Index of Relative Socio-economic Advantage and Disadvantage table,ABS standardised index score; lower means relatively more disadvantaged,score
+seifa_irsad_national_rank,ABS Index of Relative Socio-economic Advantage and Disadvantage table,National Rank; low rank means lower index score,rank
+seifa_irsad_national_decile,ABS Index of Relative Socio-economic Advantage and Disadvantage table,"National Decile; 1 is lowest, 10 highest",integer 1-10
+seifa_irsad_national_percentile,ABS Index of Relative Socio-economic Advantage and Disadvantage table,"National Percentile; 1 is lowest, 100 highest",integer 1-100
+seifa_irsad_state_rank,ABS Index of Relative Socio-economic Advantage and Disadvantage table,State Rank; low rank means lower index score,rank
+seifa_irsad_state_decile,ABS Index of Relative Socio-economic Advantage and Disadvantage table,"State Decile; 1 is lowest, 10 highest",integer 1-10
+seifa_irsad_state_percentile,ABS Index of Relative Socio-economic Advantage and Disadvantage table,"State Percentile; 1 is lowest, 100 highest",integer 1-100
+seifa_irsad_minimum_sa1_score,ABS Index of Relative Socio-economic Advantage and Disadvantage table,Minimum contributing SA1 index score,score
+seifa_irsad_maximum_sa1_score,ABS Index of Relative Socio-economic Advantage and Disadvantage table,Maximum contributing SA1 index score,score
+seifa_irsad_population_without_sa1_score_share,ABS Index of Relative Socio-economic Advantage and Disadvantage table,Share of usual resident population without an SA1-level score,proportion 0-1
+seifa_ier_score,ABS Index of Economic Resources table,ABS standardised index score; lower means relatively more disadvantaged,score
+seifa_ier_national_rank,ABS Index of Economic Resources table,National Rank; low rank means lower index score,rank
+seifa_ier_national_decile,ABS Index of Economic Resources table,"National Decile; 1 is lowest, 10 highest",integer 1-10
+seifa_ier_national_percentile,ABS Index of Economic Resources table,"National Percentile; 1 is lowest, 100 highest",integer 1-100
+seifa_ier_state_rank,ABS Index of Economic Resources table,State Rank; low rank means lower index score,rank
+seifa_ier_state_decile,ABS Index of Economic Resources table,"State Decile; 1 is lowest, 10 highest",integer 1-10
+seifa_ier_state_percentile,ABS Index of Economic Resources table,"State Percentile; 1 is lowest, 100 highest",integer 1-100
+seifa_ier_minimum_sa1_score,ABS Index of Economic Resources table,Minimum contributing SA1 index score,score
+seifa_ier_maximum_sa1_score,ABS Index of Economic Resources table,Maximum contributing SA1 index score,score
+seifa_ier_population_without_sa1_score_share,ABS Index of Economic Resources table,Share of usual resident population without an SA1-level score,proportion 0-1
+seifa_ieo_score,ABS Index of Education and Occupation table,ABS standardised index score; lower means relatively more disadvantaged,score
+seifa_ieo_national_rank,ABS Index of Education and Occupation table,National Rank; low rank means lower index score,rank
+seifa_ieo_national_decile,ABS Index of Education and Occupation table,"National Decile; 1 is lowest, 10 highest",integer 1-10
+seifa_ieo_national_percentile,ABS Index of Education and Occupation table,"National Percentile; 1 is lowest, 100 highest",integer 1-100
+seifa_ieo_state_rank,ABS Index of Education and Occupation table,State Rank; low rank means lower index score,rank
+seifa_ieo_state_decile,ABS Index of Education and Occupation table,"State Decile; 1 is lowest, 10 highest",integer 1-10
+seifa_ieo_state_percentile,ABS Index of Education and Occupation table,"State Percentile; 1 is lowest, 100 highest",integer 1-100
+seifa_ieo_minimum_sa1_score,ABS Index of Education and Occupation table,Minimum contributing SA1 index score,score
+seifa_ieo_maximum_sa1_score,ABS Index of Education and Occupation table,Maximum contributing SA1 index score,score
+seifa_ieo_population_without_sa1_score_share,ABS Index of Education and Occupation table,Share of usual resident population without an SA1-level score,proportion 0-1
+seifa_population,ABS SEIFA summary / excluded areas,Usual resident population,persons
+seifa_state,ABS index tables,"State, territory, Other Territories or Cross Border",category
+seifa_caution_low_sa1_representation,ABS index tables,ABS caution flag: area not well represented by SA1s,boolean
+seifa_cross_state_boundary,ABS index tables,POA crosses a state or territory boundary,boolean
+seifa_irsd_excluded,ABS Index of Relative Socio-economic Disadvantage table,ABS did not publish this index score for the POA,boolean
+seifa_irsd_national_percentile_scaled,seifa_irsd_national_percentile / 100,National percentile divided by 100; higher means less disadvantage / more advantage,proportion 0-1
+seifa_irsad_excluded,ABS Index of Relative Socio-economic Advantage and Disadvantage table,ABS did not publish this index score for the POA,boolean
+seifa_irsad_national_percentile_scaled,seifa_irsad_national_percentile / 100,National percentile divided by 100; higher means less disadvantage / more advantage,proportion 0-1
+seifa_ier_excluded,ABS Index of Economic Resources table,ABS did not publish this index score for the POA,boolean
+seifa_ier_national_percentile_scaled,seifa_ier_national_percentile / 100,National percentile divided by 100; higher means less disadvantage / more advantage,proportion 0-1
+seifa_ieo_excluded,ABS Index of Education and Occupation table,ABS did not publish this index score for the POA,boolean
+seifa_ieo_national_percentile_scaled,seifa_ieo_national_percentile / 100,National percentile divided by 100; higher means less disadvantage / more advantage,proportion 0-1
+seifa_score_missing_count,derived,Number of the four SEIFA index scores unavailable,count 0-4
+seifa_any_score_available,derived,At least one SEIFA index score is available,boolean
+seifa_all_scores_available,derived,All four SEIFA index scores are available,boolean
+seifa_any_index_excluded,Table 6,ABS excluded at least one index for this POA,boolean
+seifa_source_year,constant 2021,SEIFA reference year,year

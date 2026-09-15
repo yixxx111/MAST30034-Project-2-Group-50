@@ -1,0 +1,5 @@
+index,sheet,data_rows,unique_postcodes,score_rows,state_rank_missing_rows,caution_rows,cross_state_rows
+IRSD,Table 2,2624,2624,2624,18,167,15
+IRSAD,Table 3,2624,2624,2624,18,167,15
+IER,Table 4,2624,2624,2624,18,167,15
+IEO,Table 5,2627,2627,2627,18,167,15

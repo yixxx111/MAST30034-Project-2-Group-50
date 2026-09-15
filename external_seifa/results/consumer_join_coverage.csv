@@ -1,0 +1,8 @@
+scope,metric,rows,denominator,rate
+consumer_rows,matched_all_scores,414125,499999,0.828251656503313
+consumer_rows,matched_partial_scores,472,499999,0.000944001888003776
+consumer_rows,matched_no_scores,2221,499999,0.004442008884017768
+consumer_rows,postcode_not_in_seifa,83181,499999,0.16636233272466544
+consumer_rows,special_geography,0,499999,0.0
+consumer_rows,missing_or_invalid_postcode,0,499999,0.0
+distinct_valid_postcodes,geography_matched,2640,3167,0.8335964635301547
