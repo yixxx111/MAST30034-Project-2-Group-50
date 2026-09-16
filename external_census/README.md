@@ -4,12 +4,44 @@ An external-data stage for MAST30034 Project 2: reusable cleaning logic,
 a command-line entry point, quality reports, tests and a readable summary notebook.
 It leaves original source files and the curated transaction fact table unchanged.
 
-## Start here
+## Quick guide for teammates
 
-1. Open `curation_summary/census_summary.ipynb` for the executed results.
-2. Use `results/census_clean.parquet` as the typed postcode dimension.
-   `results/census_clean.csv` is the same data in a convenient text format.
-3. Use `results/data_dictionary.csv` for every output column and formula.
+**What you are receiving:** a cleaned 2021 Census table with **one row per postcode**, 2,641 rows and 59 columns. It describes consumers' residential areas, not their individual income, age or employment status. It is ready for downstream use; you do not need to rerun cleaning just to use the saved table.
+
+| What you want to do | Open this file |
+|---|---|
+| Use the cleaned data | `results/census_clean.parquet` (recommended; preserves postcode text) |
+| Preview the same data as a spreadsheet | `results/census_clean.csv` (keep postcode as text) |
+| Understand a column, its formula or unit | `results/data_dictionary.csv` |
+| See the cleaning decisions, charts and results | `curation_summary/census_summary.ipynb` |
+| View the summary without running Python | Download/open `curation_summary/census_summary.html` in a browser |
+| Check consumer postcode matching | `results/consumer_join_coverage.csv` |
+| Check which features remain missing | `results/consumer_feature_missingness.csv` |
+
+### How this connects to our other work
+
+```text
+Member 2 cleaned transactions             Census cleaned table
+consumer_postcode                        postcode (unique)
+                  many-to-one LEFT JOIN
+                             ↓
+Transactions with additional census_ columns
+```
+
+The Census cleaning and consumer postcode coverage audit are complete. **The full transaction join has not been run.** Consumer coverage is 83.36%; this is not the transaction match rate. Use the optional transaction-enrichment command below to generate the enriched table and its own coverage reports. If the group first combines Census, SEIFA and ATO into an external master table, coordinate that step so Census is not attached twice.
+
+### Before using the features
+
+- Keep both postcode keys as four-character text, including leading zeros such as `0800`. A LEFT JOIN should preserve every transaction; the Census side must have at most one row per postcode.
+- The 59 columns include keys, source counts, derived features and review flags. They are **not 59 independent model inputs**. Choose features for the analysis and avoid using a count, its share and several equivalent versions without a reason.
+- Shares and ordinary ratios use **0–1** (e.g. `0.25` means 25%). Columns ending in `_pct` use **0–100** (e.g. `25` means 25%). For unemployment and labour-force participation, prefer the `_published_pct` columns; their derived counterparts are QA comparisons.
+- Median household income is **AUD per week**, not annual or personal income. Values describe **2021**, not the cleaning-run date.
+- Unmatched postcodes and unavailable feature values remain missing. Do not replace them with zero income, zero population or zero risk. A successful postcode match does not guarantee every feature is available.
+- Census features are not merchant scores. Define how customer-area features will be aggregated for each merchant; do not sum the same area's population once per transaction.
+
+For an initial review, useful candidates include `census_population`, `census_median_age`, `census_median_household_income_weekly`, `census_age_20_44_share`, `census_households_weekly_income_3000_plus_share`, `census_bachelor_degree_share`, and the published labour-market percentages. Feature selection and ranking weights remain group decisions.
+
+The sections below retain the detailed setup, source fields, cleaning rules and interpretation limits for reproducibility.
 
 The supplied Census result is an actual run on the official ABS DataPack. This
 16 September 2026 rerun includes actual consumer coverage: 416,818 / 499,999
@@ -40,7 +72,7 @@ Put the **whole `external_census/` folder next to** the shared curation project:
 
 ```text
 project-root/
-├── curation_pipeline/          # shared transaction curation, unchanged
+├── member2_curation/          # shared transaction curation, unchanged
 ├── external_census/            # this delivery
 │   ├── src/
 │   ├── tests/
@@ -90,7 +122,7 @@ After the shared pipeline has produced `curated_transactions`, run:
 
 ```bash
 python -m external_census.src.enrich_transactions \
-  --transactions curation_pipeline/data/curated/curated_transactions \
+  --transactions member2_curation/data/curated/curated_transactions \
   --census-parquet external_census/results/census_clean.parquet \
   --output-root data/curated/census_enriched
 ```
