@@ -1,0 +1,4 @@
+source_snapshot,transaction_count,first_order_datetime,last_order_datetime
+transactions_20210228_20210827_snapshot,3643266,2021-02-28,2021-08-27
+transactions_20210828_20220227_snapshot,4508106,2021-08-28,2022-02-27
+transactions_20220228_20220828_snapshot,6044133,2022-02-28,2022-10-26

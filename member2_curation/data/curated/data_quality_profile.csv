@@ -1,0 +1,22 @@
+stage,classification,field_or_metric,row_count,rate_of_curated_rows,treatment,notes
+curated_transactions,field_missing_after_curation,order_id,0,0.0,Retain only when non-essential; inspect before downstream use.,Blank strings are counted as missing for text fields.
+curated_transactions,field_missing_after_curation,order_datetime,0,0.0,Retain only when non-essential; inspect before downstream use.,Blank strings are counted as missing for text fields.
+curated_transactions,field_missing_after_curation,user_id,0,0.0,Retain only when non-essential; inspect before downstream use.,Blank strings are counted as missing for text fields.
+curated_transactions,field_missing_after_curation,consumer_id,0,0.0,Retain only when non-essential; inspect before downstream use.,Blank strings are counted as missing for text fields.
+curated_transactions,field_missing_after_curation,merchant_abn,0,0.0,Retain only when non-essential; inspect before downstream use.,Blank strings are counted as missing for text fields.
+curated_transactions,field_missing_after_curation,dollar_value,0,0.0,Retain only when non-essential; inspect before downstream use.,Blank strings are counted as missing for text fields.
+curated_transactions,field_missing_after_curation,consumer_state,0,0.0,Retain only when non-essential; inspect before downstream use.,Blank strings are counted as missing for text fields.
+curated_transactions,field_missing_after_curation,consumer_postcode,0,0.0,Retain only when non-essential; inspect before downstream use.,Blank strings are counted as missing for text fields.
+curated_transactions,field_missing_after_curation,consumer_postcode_valid,0,0.0,Retain only when non-essential; inspect before downstream use.,Blank strings are counted as missing for text fields.
+curated_transactions,field_missing_after_curation,consumer_gender,0,0.0,Retain only when non-essential; inspect before downstream use.,Blank strings are counted as missing for text fields.
+curated_transactions,field_missing_after_curation,merchant_name,580830,0.040916473207539994,Retain only when non-essential; inspect before downstream use.,Blank strings are counted as missing for text fields.
+curated_transactions,field_missing_after_curation,merchant_tags,580830,0.040916473207539994,Retain only when non-essential; inspect before downstream use.,Blank strings are counted as missing for text fields.
+curated_transactions,field_missing_after_curation,source_snapshot,0,0.0,Retain only when non-essential; inspect before downstream use.,Blank strings are counted as missing for text fields.
+curated_transactions,field_missing_after_curation,merchant_master_matched,0,0.0,Retain only when non-essential; inspect before downstream use.,Blank strings are counted as missing for text fields.
+curated_transactions,field_missing_after_curation,is_amount_above_p99,0,0.0,Retain only when non-essential; inspect before downstream use.,Blank strings are counted as missing for text fields.
+curated_transactions,field_missing_after_curation,order_month,0,0.0,Retain only when non-essential; inspect before downstream use.,Blank strings are counted as missing for text fields.
+curated_transactions,field_missing_after_curation,order_year,0,0.0,Retain only when non-essential; inspect before downstream use.,Blank strings are counted as missing for text fields.
+merchant_left_join,join_induced_unmatched,merchant_master_matched = false,580830,0.040916473207539994,Retain the transaction and use the match flag in coverage decisions.,The merchant ABN existed in the transaction but was absent from the merchant master.
+pending_enrichment,not_integrated_not_a_missing_value,consumer_fraud_probability,14195505,1.0,Do not impute or default to zero at this stage.,"Join only after validating keys, time coverage and one-to-one cardinality."
+pending_enrichment,not_integrated_not_a_missing_value,merchant_fraud_probability,14195505,1.0,Do not impute or default to zero at this stage.,"Join only after validating keys, time coverage and one-to-one cardinality."
+pending_enrichment,not_integrated_not_a_missing_value,external_geographic_features,14195505,1.0,Do not impute or default to zero at this stage.,Join through a validated consumer-to-geography correspondence table.
