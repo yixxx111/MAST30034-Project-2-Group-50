@@ -1,11 +1,9 @@
-"""Quality utilities: preserve source evidence, distinguish missingness causes."""
 from __future__ import annotations
 import numpy as np
 import pandas as pd
 
 
 def ratio(numerator: pd.Series, denominator: pd.Series):
-    """Never divide by zero or silently clip perturbed counts into a valid ratio."""
     value = numerator / denominator.where(denominator.gt(0))
     reasons = pd.Series('', index=numerator.index, dtype='string')
     reasons.loc[numerator.isna() | denominator.isna()] = 'missing_input'
@@ -27,10 +25,12 @@ def profile_features(frame: pd.DataFrame) -> pd.DataFrame:
 
 
 def outlier_profile(frame: pd.DataFrame):
-    """Distribution review only: no winsorisation or statistical outlier removal."""
     summaries, flags = [], []
     for field in ['census_population', 'census_median_age',
-                  'census_median_household_income_weekly', 'census_avg_household_size']:
+                  'census_median_household_income_weekly', 'census_avg_household_size',
+                  'census_age_20_44_count',
+                  'census_households_weekly_income_3000_plus_count',
+                  'census_bachelor_degree_count']:
         s = frame[field]
         threshold = s.quantile(.99)
         mask = s.gt(threshold)

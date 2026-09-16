@@ -1,90 +1,72 @@
-# Validation of this delivery
+# Validation
 
-Validation date: 15 September 2026. All new artifacts were written under this
-Codex task's workspace. Original source data and the supplied Member 2 archive
-were read, not edited. No GitHub upload or repository replacement was performed.
+Validated on 15 September 2026. This delivery is based on `external_census.zip`;
+its original curation, audit, consumer-coverage and optional transaction-enrichment
+paths remain in place. The source ZIP is read directly and never modified.
 
-## Actual data run
+## Actual Census run
 
-Inputs:
+The pipeline was run against the official ABS 2021 General Community Profile
+Postal Areas DataPack:
 
-- `2021_GCP_POA_for_AUS_short-header.zip` (the original conversation attachment).
-- The local project `tbl_consumer.csv` (pipe-separated, 499,999 data rows).
+- ZIP: `2021_GCP_POA_for_AUS_short-header.zip`
+- source URL: recorded in `results/census_metadata.json`
+- ZIP SHA-256:
+  `ccca4c72ee769d81c13dd6cfaedff7df58819267384195118f3d3b87d6c64008`
+- seven source CSVs, each with 2,643 rows;
+- `POA9494` and `POA9797` excluded from the join dimension;
+- 2,641 ordinary POAs and 59 curated columns;
+- seven source-table audits, five source-cell issues, 191 undefined or
+  out-of-range derived-ratio records, and 7,004 non-additivity records retained
+  for review; and
+- no source rows, outliers or missing values were imputed or silently deleted.
 
-`results/census_metadata.json` records SHA-256 fingerprints for the original ZIP,
-each selected CSV member and the consumer file, as well as the execution versions.
-Only postcode was read from the consumer table. No consumer names, addresses or
-individual identifiers are included in the deliverable reports.
+The updated run also produces `published_rate_comparison.csv`: 5,282 rows covering
+two published G43 percentages for every ordinary POA. It makes any difference from
+G46B count-derived rates explicit rather than treating the two measures as identical.
 
-Observed outputs:
+## Consumer coverage rerun — 16 September 2026
 
-- Five tables, 2,643 rows each; 2 special POA exclusions per table.
-- 2,641 ordinary POAs, 41 output columns; unique non-null 4-character postcode.
-- 19 selected raw numeric measures: no missing, nonnumeric or nonfinite source
-  cells among the accepted POAs.
-- Five G02 cells set to null by documented zero-age/household-size policy.
-- 178 ratio issue cells: 113 zero denominators, 65 outside [0,1]. Counts retained.
-- 68 POAs with at least one unavailable numeric feature, all retained.
-- 416,818 of 499,999 consumer rows matched, 83,181 unmatched; no input rows lost.
-- 2,640 of 3,167 distinct consumer postcodes matched.
-- No statistical outlier removal and no imputation.
+The pipeline was rerun with the supplied `tbl_consumer.csv`: 416,818 of 499,999
+consumer records matched (83.36%); 83,181 remained unmatched (16.64%).
+All four consumer audit reports were generated. No consumer records were removed
+or imputed. The full transaction enrichment stage was not run.
 
-The metadata and audit reports, rather than this prose, are the primary evidence
-when running the pipeline on new inputs.
+The summary notebook cells were executed sequentially in an in-process IPython
+session and outputs saved; an HTML summary was exported. Cleaning source code
+is unchanged. All 25 existing tests passed again. Runtime versions are recorded
+in `results/census_metadata.json`.
 
 ## Automated tests
-
-**25 tests passed.** The suite covers:
-
-- postcode padding, whitespace, malformed values and leading zeros;
-- exact source schema and invalid/special POA quarantine;
-- duplicate POA keys, including duplicates created by normalisation;
-- nonnumeric, nonfinite, negative and fractional population counts;
-- zero-count preservation and documented zero-median policy;
-- employment, unemployment, couple-family and household formulas with known counts;
-- zero/missing/out-of-range ratios;
-- missing source files and inconsistent source-table POA coverage;
-- consumer LEFT JOIN row preservation and distinct non-match causes;
-- source-feature missingness versus join-induced missingness;
-- refusal of duplicated dimensions and repeated enrichment;
-- source immutability, deterministic reruns and Parquet postcode types;
-- refusal to overwrite unrelated output folders or source locations;
-- preservation of core transaction values and merchant flags in Parquet enrichment;
-- transaction-row and dollar-value coverage using known synthetic values;
-- Member 2-style `order_year=.../order_month=...` partitioned Parquet;
-- clearing stale consumer reports when rerunning without a consumer input.
-
-Run from the repository root:
 
 ```bash
 python -m pytest external_census/tests -q
 ```
 
-Tests use temporary synthetic fixtures and do not require the raw project tables.
+The updated suite completed successfully: **25 passed**. It covers source schemas,
+malformed and special POAs, duplicate keys, numeric-cell validation, source-table
+coverage, the added age/income/degree formulas, published-rate comparison, bounded
+ratios, output replacement safety, consumer LEFT JOIN row preservation and
+single-file/partitioned Parquet transaction enrichment.
 
-## Reproducibility check
+## Reproduce
 
-A second independent run on the actual source ZIP and consumer CSV produced
-byte-identical values for all 15 CSV/Parquet output files. Timestamps in metadata
-are intentionally run-specific. The original source ZIP and consumer file hashes
-still match the recorded fingerprints after execution.
+From the project root, either point to a previously downloaded DataPack or let the
+CLI fetch the official file:
 
-## Notebook and charts
+```bash
+python -m external_census.src.run_pipeline \
+  --zip tables/external/2021_GCP_POA_for_AUS_short-header.zip --download \
+  --output-root external_census/results
+```
 
-- All 8 code cells executed, with zero notebook cell errors.
-- Notebook schema validated with nbformat.
-- Both chart outputs were visually inspected; labels and legends are readable.
-- The standalone HTML summary was exported from the executed notebook with input
-  code hidden. The notebook retains readable code for verification.
-- The host emitted a kernel-cleanup permission warning after execution; it did not
-  cause cell errors or prevent notebook output from being saved.
+Each run records the source URL, ZIP size and hash, selected member hashes, software
+versions, output shape and policies in `results/census_metadata.json`.
 
-## Limits of validation
+## Scope limits
 
-The actual entire Member 2 transaction dataset was not rerun or enriched. The
-Parquet integration path was tested on single-file and partitioned synthetic core
-outputs. The actual consumer coverage is **consumer-row weighted**, not transaction
-or GMV weighted. Use the optional enrichment command to measure those separately.
-
-This delivery does not claim completion of fraud processing, merchant aggregation,
-statistical segmentation, ranking or the full group's course requirements.
+POAs are an ABS approximation to postcodes, not an exact delivery-postcode
+crosswalk. Census values are 2021 area context, not individual consumer attributes;
+they should not be summed once per transaction or interpreted causally. The optional
+enrichment path is deliberately a many-to-one LEFT JOIN so that unmatched postcodes
+remain visible as missing rather than being converted to zero.

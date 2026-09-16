@@ -2,6 +2,9 @@ field,source,definition,unit
 postcode,POA_CODE_2021,4-character POA-derived postcode; preserve leading zeros,string
 poa_code,POA_CODE_2021,Normalised ABS POA key,string
 census_population,2021Census_G01_AUST_POA.csv :: Tot_P_P,"Total persons, usual residence",count
+census_age_20_24,2021Census_G01_AUST_POA.csv :: Age_20_24_yr_P,Persons aged 20–24,count
+census_age_25_34,2021Census_G01_AUST_POA.csv :: Age_25_34_yr_P,Persons aged 25–34,count
+census_age_35_44,2021Census_G01_AUST_POA.csv :: Age_35_44_yr_P,Persons aged 35–44,count
 census_median_age,2021Census_G02_AUST_POA.csv :: Median_age_persons,Median age of persons,years
 census_median_household_income_weekly,2021Census_G02_AUST_POA.csv :: Median_tot_hhd_inc_weekly,Median total household income,AUD/week
 census_avg_household_size,2021Census_G02_AUST_POA.csv :: Average_household_size,Average usual residents per occupied private dwelling,persons/household
@@ -10,6 +13,14 @@ census_couple_with_children_families,2021Census_G29_AUST_POA.csv :: CF_Total_F,C
 census_single_parent_families,2021Census_G29_AUST_POA.csv :: OPF_Total_F,One-parent families,count
 census_other_families,2021Census_G29_AUST_POA.csv :: Other_family_F,Other families,count
 census_total_families,2021Census_G29_AUST_POA.csv :: Total_F,Total families in occupied private dwellings,count
+census_households_all,2021Census_G33_AUST_POA.csv :: Tot_Tot,All households used as the income-share denominator,count
+census_households_weekly_income_3000_3499,2021Census_G33_AUST_POA.csv :: HI_3000_3499_Tot,"Households with weekly income AUD 3,000–3,499",count
+census_households_weekly_income_3500_3999,2021Census_G33_AUST_POA.csv :: HI_3500_3999_Tot,"Households with weekly income AUD 3,500–3,999",count
+census_households_weekly_income_4000_plus,2021Census_G33_AUST_POA.csv :: HI_4000_more_Tot,"Households with weekly income AUD 4,000 or more",count
+census_population_15plus_g43,2021Census_G43_AUST_POA.csv :: P_15_yrs_over_P,Persons aged 15 years and over,count
+census_unemployment_rate_published_pct,2021Census_G43_AUST_POA.csv :: Percent_Unem_loyment_P,ABS-published unemployment rate,percentage points
+census_labour_force_participation_rate_published_pct,2021Census_G43_AUST_POA.csv :: Percnt_LabForc_prticipation_P,ABS-published labour-force participation rate,percentage points
+census_bachelor_degree_count,2021Census_G43_AUST_POA.csv :: non_sch_qual_Bchelr_Degree_P,Persons with a bachelor degree,count
 census_employed_persons,2021Census_G46B_AUST_POA.csv :: P_Tot_Emp_Tot,Employed persons aged 15+,count
 census_unemployed_persons,2021Census_G46B_AUST_POA.csv :: P_Tot_Unemp_Tot,Unemployed persons aged 15+,count
 census_labour_force,2021Census_G46B_AUST_POA.csv :: P_Tot_LF_Tot,Persons aged 15+ in labour force,count
@@ -32,6 +43,13 @@ census_lone_person_household_share,census_lone_person_households / census_total_
 census_group_household_share,census_group_households / census_total_households,"Null for missing input, zero denominator or ratio outside [0,1]; never clipped",proportion 0-1
 census_source_year,derived,Census reference year 2021,year
 census_couple_families,derived,Couple families with and without children summed,count
+census_age_20_44_count,derived,Persons aged 20–44 summed from the three G01 age bands,count
+census_households_weekly_income_3000_plus_count,derived,"Households with weekly income AUD 3,000 or more summed from G33 bands",count
+census_age_20_44_share,derived,Persons aged 20–44 divided by total population; null for undefined or perturbed ratios,proportion 0-1
+census_households_weekly_income_3000_plus_share,derived,"Households with weekly income AUD 3,000 or more divided by all G33 households",proportion 0-1
+census_bachelor_degree_share,derived,Bachelor-degree count divided by G43 persons aged 15 years and over,proportion 0-1
+census_unemployment_rate_derived_pct,derived,"G46B unemployed persons divided by labour force, multiplied by 100; QA comparison only",percentage points
+census_labour_force_participation_rate_derived_pct,derived,"G46B labour force divided by population 15+, multiplied by 100; QA comparison only",percentage points
 census_small_population,derived,"Denominator below 30; review flag, not an exclusion rule",boolean
 census_small_labour_force,derived,"Denominator below 30; review flag, not an exclusion rule",boolean
 census_small_families,derived,"Denominator below 30; review flag, not an exclusion rule",boolean

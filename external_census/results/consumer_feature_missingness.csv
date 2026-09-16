@@ -1,5 +1,8 @@
 field,all_consumer_missing,matched_consumer_missing,unmatched_consumer_rows,all_consumer_rows
 census_population,83181,0,83181,499999
+census_age_20_24,83181,0,83181,499999
+census_age_25_34,83181,0,83181,499999
+census_age_35_44,83181,0,83181,499999
 census_median_age,83340,159,83181,499999
 census_median_household_income_weekly,83181,0,83181,499999
 census_avg_household_size,83799,618,83181,499999
@@ -8,6 +11,14 @@ census_couple_with_children_families,83181,0,83181,499999
 census_single_parent_families,83181,0,83181,499999
 census_other_families,83181,0,83181,499999
 census_total_families,83181,0,83181,499999
+census_households_all,83181,0,83181,499999
+census_households_weekly_income_3000_3499,83181,0,83181,499999
+census_households_weekly_income_3500_3999,83181,0,83181,499999
+census_households_weekly_income_4000_plus,83181,0,83181,499999
+census_population_15plus_g43,83181,0,83181,499999
+census_unemployment_rate_published_pct,83181,0,83181,499999
+census_labour_force_participation_rate_published_pct,83181,0,83181,499999
+census_bachelor_degree_count,83181,0,83181,499999
 census_employed_persons,83181,0,83181,499999
 census_unemployed_persons,83181,0,83181,499999
 census_labour_force,83181,0,83181,499999
@@ -20,6 +31,8 @@ census_group_households,83181,0,83181,499999
 census_total_households,83181,0,83181,499999
 census_source_year,83181,0,83181,499999
 census_couple_families,83181,0,83181,499999
+census_age_20_44_count,83181,0,83181,499999
+census_households_weekly_income_3000_plus_count,83181,0,83181,499999
 census_employment_to_population_ratio,83995,814,83181,499999
 census_unemployment_rate,83506,325,83181,499999
 census_labour_force_participation_rate,83959,778,83181,499999
@@ -30,6 +43,11 @@ census_single_parent_family_share,86203,3022,83181,499999
 census_family_household_share,85929,2748,83181,499999
 census_lone_person_household_share,85086,1905,83181,499999
 census_group_household_share,84933,1752,83181,499999
+census_age_20_44_share,83340,159,83181,499999
+census_households_weekly_income_3000_plus_share,84933,1752,83181,499999
+census_bachelor_degree_share,83340,159,83181,499999
+census_unemployment_rate_derived_pct,83506,325,83181,499999
+census_labour_force_participation_rate_derived_pct,83959,778,83181,499999
 census_small_population,83181,0,83181,499999
 census_small_labour_force,83181,0,83181,499999
 census_small_families,83181,0,83181,499999
