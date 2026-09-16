@@ -1,9 +1,11 @@
 {
   "stage": "external_census",
-  "schema_version": 1,
+  "schema_version": 2,
   "source_year": 2021,
-  "created_utc": "2026-09-15T05:06:27.085471+00:00",
+  "created_utc": "2026-09-16T03:34:33.353016+00:00",
   "source_filename": "2021_GCP_POA_for_AUS_short-header.zip",
+  "source_url": "https://www.abs.gov.au/census/find-census-data/datapacks/download/2021_GCP_POA_for_AUS_short-header.zip",
+  "source_bytes": 38014906,
   "source_sha256": "ccca4c72ee769d81c13dd6cfaedff7df58819267384195118f3d3b87d6c64008",
   "source_members": [
     {
@@ -22,6 +24,16 @@
       "sha256": "5ef6795bb9f31db93549fc66685625cd96b55bc08255e590f46b2c1348538d59"
     },
     {
+      "table": "G33",
+      "member": "2021 Census GCP Postal Areas for AUS/2021Census_G33_AUST_POA.csv",
+      "sha256": "5a6f5c9e663df6189bcfc884d146cec5bda5939feccbff0d7e0034fe9668a729"
+    },
+    {
+      "table": "G43",
+      "member": "2021 Census GCP Postal Areas for AUS/2021Census_G43_AUST_POA.csv",
+      "sha256": "260ca3b51e67e4bc81dfa4cbb5154a24f52699c901c3a03f2dd92f3759c3c848"
+    },
+    {
       "table": "G46B",
       "member": "2021 Census GCP Postal Areas for AUS/2021Census_G46B_AUST_POA.csv",
       "sha256": "e6fcc0b870a451e57b309a1ee02f36dc9a69eb23e16efbea5d292f7c7c5f0525"
@@ -33,7 +45,7 @@
     }
   ],
   "clean_rows": 2641,
-  "clean_columns": 41,
+  "clean_columns": 59,
   "consumer_join_status": "completed_consumer_table_only",
   "transaction_join_status": "not_run",
   "consumer_source_sha256": "9fe2b21bf5dd2d13a55551f977212abe0eff844b9e47a411ff974d70463d86c1",

@@ -1,7 +1,3 @@
-"""Optional DuckDB stage for Member 2's partitioned curated_transactions.
-
-Writes a new dataset and separate join reports. Never updates the internal base.
-"""
 from __future__ import annotations
 import argparse
 import json
@@ -26,7 +22,7 @@ def enrich_transactions(transactions, census_parquet, output_root):
     files = sorted(transactions.rglob('*.parquet')) if transactions.is_dir() else [transactions]
     if not files or any(not f.is_file() for f in files): raise FileNotFoundError('No input transaction Parquet files')
     validate_output(output_root,[transactions,census_parquet],marker='enrichment_metadata.json')
-    # Do not write inside the input tree: it would enter the recursive glob on reruns.
+
     if transactions.is_dir() and transactions in output_root.parents:
         raise DataQualityError('Enriched output must be outside the input transaction directory')
     output_root.parent.mkdir(parents=True,exist_ok=True)
@@ -49,7 +45,7 @@ def enrich_transactions(transactions, census_parquet, output_root):
             count,unique = con.execute('SELECT count(*),count(DISTINCT postcode) FROM census').fetchone()
             if not count or bad or count!=unique: raise DataQualityError('Census dimension has invalid or duplicate postcodes')
             before,orders = con.execute('SELECT count(*),count(DISTINCT order_id) FROM source_transactions').fetchone()
-            if before!=orders: raise DataQualityError('Input must have non-null unique order_id, as promised by Member 2')
+            if before!=orders: raise DataQualityError('Input must have non-null unique order_id before external enrichment')
             feature_sql = ', '.join('c.'+_identifier(f) for f in fields)
             con.execute(f"""CREATE TEMP VIEW enriched AS
                 WITH normalised AS (
@@ -100,7 +96,7 @@ def enrich_transactions(transactions, census_parquet, output_root):
 
 
 def main():
-    p = argparse.ArgumentParser(description='Append Census features to a COPY of Member 2 curated Parquet.')
+    p = argparse.ArgumentParser(description='Append Census features to a copy of curated Parquet.')
     p.add_argument('--transactions',required=True,type=Path)
     p.add_argument('--census-parquet',required=True,type=Path)
     p.add_argument('--output-root',required=True,type=Path)

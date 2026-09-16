@@ -1,9 +1,8 @@
 # ABS Census 2021 POA curation
 
-A separate external-data stage for MAST30034 Project 2. It follows the supplied
-`member2_curation` pattern: reusable cleaning logic, command-line entry point,
-quality reports, tests and a readable summary notebook. It does **not** replace
-Member 2, change its transaction rules or modify original input files.
+An external-data stage for MAST30034 Project 2: reusable cleaning logic,
+a command-line entry point, quality reports, tests and a readable summary notebook.
+It leaves original source files and the curated transaction fact table unchanged.
 
 ## Start here
 
@@ -12,31 +11,36 @@ Member 2, change its transaction rules or modify original input files.
    `results/census_clean.csv` is the same data in a convenient text format.
 3. Use `results/data_dictionary.csv` for every output column and formula.
 
-The supplied results are an actual run on the uploaded ABS ZIP and the local
-`tbl_consumer.csv`. They are not synthetic demonstration results.
+The supplied Census result is an actual run on the official ABS DataPack. This
+16 September 2026 rerun includes actual consumer coverage: 416,818 / 499,999
+consumers matched (83.36%). All four consumer audit reports are included.
+Full transaction enrichment has not been run.
 
 ## Verified result
 
-- Five source CSVs, each with 2,643 rows and no ordinary duplicate POA keys.
+- Seven source CSVs, each with 2,643 rows and no ordinary duplicate POA keys.
 - Two special geographies excluded from the postcode dimension: `POA9494`
   (No Usual Address) and `POA9797` (Migratory / Offshore / Shipping).
-- **2,641 rows, 41 columns** in the clean dimension: 2 keys, 19 source measures,
-  1 year field, 1 combined family count, 10 proportions and 8 review flags.
-- **416,818 / 499,999 consumer rows matched (83.36%)**. The remaining **83,181**
-  have syntactically valid postcodes absent from this POA dataset.
-- **2,640 / 3,167 distinct observed postcodes matched**; 527 did not.
-- No consumer rows were removed. No missing values were imputed.
+- **2,641 rows and 59 columns** in the clean dimension, including the original
+  demographics, household structure and labour features plus age 20–44,
+  high-income-household and bachelor-degree features.
+- `published_rate_comparison.csv` compares ABS-published G43 unemployment and
+  labour-force-participation percentages with rates derived from G46B counts.
+  The published percentages are the recommended analysis features; derived rates
+  are a QA check only.
+- No POA, consumer or transaction rows are removed by a join. No missing values
+  are imputed and no statistical outliers are removed.
 - The actual full transaction dataset has **not** been enriched in this delivery.
   The optional Parquet enrichment stage is provided and tested with synthetic
   transaction fixtures. Consumer coverage is not transaction-weighted coverage.
 
 ## Repository placement
 
-Put the **whole `external_census/` folder next to** `member2_curation/`:
+Put the **whole `external_census/` folder next to** the shared curation project:
 
 ```text
 project-root/
-├── member2_curation/           # existing module, unchanged
+├── curation_pipeline/          # shared transaction curation, unchanged
 ├── external_census/            # this delivery
 │   ├── src/
 │   ├── tests/
@@ -50,20 +54,20 @@ project-root/
         └── 2021_GCP_POA_for_AUS_short-header.zip
 ```
 
-Commands below run from **project-root**, not from `member2_curation`.
-Relative imports prevent the two modules' `src/` packages from conflicting.
+Commands below run from **project-root**. Relative imports prevent package-name
+conflicts with the shared curation module.
 
 ## Install and run
 
-Use a separate virtual environment if Member 2's pinned dependencies differ.
-Do not replace its requirements file.
+Use a separate virtual environment if the shared transaction pipeline pins different
+dependencies. Do not replace its requirements file.
 
 ```bash
 python3 -m venv external_census/.venv
 source external_census/.venv/bin/activate
 python -m pip install -r external_census/requirements.txt
 python -m external_census.src.run_pipeline \
-  --zip tables/external/2021_GCP_POA_for_AUS_short-header.zip \
+  --zip tables/external/2021_GCP_POA_for_AUS_short-header.zip --download \
   --consumer-csv tables/tbl_consumer.csv \
   --output-root external_census/results
 python -m pytest external_census/tests -q
@@ -80,13 +84,13 @@ A rerun replaces that directory after computation succeeds; do not put unrelated
 files in it. Raw inputs may not be inside this directory. Source hashes and
 software versions are recorded in `census_metadata.json`.
 
-## Optional: add Census to Member 2 transactions
+## Optional: append Census to curated transactions
 
-After Member 2 has produced `curated_transactions`, run:
+After the shared pipeline has produced `curated_transactions`, run:
 
 ```bash
 python -m external_census.src.enrich_transactions \
-  --transactions member2_curation/data/curated/curated_transactions \
+  --transactions curation_pipeline/data/curated/curated_transactions \
   --census-parquet external_census/results/census_clean.parquet \
   --output-root data/curated/census_enriched
 ```
@@ -108,12 +112,11 @@ metadata. If the transaction stage fails, the completed Census stage remains
 available; the command fails rather than reporting full success.
 
 The join is on normalised `consumer_postcode`, many-to-one and LEFT JOIN. It
-requires a unique non-null `order_id`, as Member 2 promises, and does not remove
+requires a unique non-null `order_id` and does not remove
 unmatched transactions. `merchant_master_matched`, dates, amounts and other
 existing core fields are retained. Existing `census_` columns cause an error,
-preventing accidental double enrichment. The original Member 2 quality profile
-still describes its original base stage; use the new enrichment report for the
-Census stage. Fraud processing remains a separate group responsibility.
+preventing accidental double enrichment. The original transaction quality profile
+still describes its base stage; use the new enrichment report for the Census stage.
 
 ## Selected source fields
 
@@ -121,9 +124,11 @@ All files also include `POA_CODE_2021`.
 
 | Table / exact CSV | Selected short headers |
 |---|---|
-| `2021Census_G01_AUST_POA.csv` | `Tot_P_P` |
+| `2021Census_G01_AUST_POA.csv` | `Tot_P_P`, `Age_20_24_yr_P`, `Age_25_34_yr_P`, `Age_35_44_yr_P` |
 | `2021Census_G02_AUST_POA.csv` | `Median_age_persons`, `Median_tot_hhd_inc_weekly`, `Average_household_size` |
 | `2021Census_G29_AUST_POA.csv` | `CF_no_children_F`, `CF_Total_F`, `OPF_Total_F`, `Other_family_F`, `Total_F` |
+| `2021Census_G33_AUST_POA.csv` | `Tot_Tot`, `HI_3000_3499_Tot`, `HI_3500_3999_Tot`, `HI_4000_more_Tot` |
+| `2021Census_G43_AUST_POA.csv` | `P_15_yrs_over_P`, `Percent_Unem_loyment_P`, `Percnt_LabForc_prticipation_P`, `non_sch_qual_Bchelr_Degree_P` |
 | `2021Census_G46B_AUST_POA.csv` | `P_Tot_Emp_Tot`, `P_Tot_Unemp_Tot`, `P_Tot_LF_Tot`, `P_Not_in_LF_Tot`, `P_LFS_NS_Tot`, `P_Tot_Tot` |
 | `2021Census_G42_AUST_POA.csv` | `Tot_FHs_Tot`, `Tot_Lone_P_H`, `Tot_Group_H`, `Tot_Tot` |
 
@@ -139,12 +144,12 @@ families, not females. Total couple families therefore equals
 2. Normalise POA to uppercase `POA` plus 4 ASCII digits. Quarantine malformed keys
    and the two special geographies in `excluded_poa_records.csv`.
 3. Preserve postcode as text, e.g. `POA0800` becomes `0800`. Consumer normalisation
-   follows Member 2: trim 1-4 digits, pad to four. Decimal text such as `3000.0`
+   follows the shared transaction-curation contract: trim 1-4 digits, pad to four. Decimal text such as `3000.0`
    is rejected rather than guessed. POA formatting and actual postal validity
    are separate concepts.
 4. Invalid/nonfinite numeric values become null with cell-level evidence, without
    deleting the POA. Counts must be nonnegative integers. There were no missing,
-   nonnumeric or nonfinite source cells in the 19 selected measures for ordinary
+   nonnumeric or nonfinite source cells in the 30 selected measures for ordinary
    POAs in this run.
 5. Zero counts remain zero. A zero median age or nonpositive average household
    size is left analytically unavailable and logged: this is a conservative
@@ -156,11 +161,14 @@ families, not females. Total couple families therefore equals
    force, family counts / total families, household counts / total households.
    Persons 15+ includes labour-status-not-stated persons. A denominator of zero
    yields null. A ratio outside [0,1] also yields null and a report, while the source
-   counts remain available. Ratios are proportions, not percentage values.
+   counts remain available. Derived ratios are proportions. G43's unemployment and
+   labour-force-participation values are published percentage points and are
+   compared against their G46B-derived counterparts in a separate QA report.
 7. ABS confidentiality perturbation means totals need not add up exactly. Report
    differences; do not force equality. Low denominators below 30 are review flags
    only: this is a project threshold, not an ABS reliability certification.
-8. Flag upper 1% for population, income, age and household size for inspection.
+8. Flag upper 1% for population, income, age, household size and the added count
+   features for inspection.
    Remove no statistical outliers, perform no winsorisation, and do no imputation.
    Model transformations should be decided later and fitted on training data.
 
@@ -178,26 +186,6 @@ Do not replace unmatched records with zero income or zero population. The suppli
 consumer data are synthetic; non-match causes cannot be assigned to specific postal
 categories from the postcode string alone. POA excludes some postcodes, including
 non-street-delivery codes, but the report does not claim that explains every non-match.
-
-## Course requirement mapping
-
-Based on the actual local **MAST30034_Project_2_Buy_Now_Pay_Later_Spec.pdf**:
-
-| Requirement | Evidence in this module |
-|---|---|
-| Python automated ingestion and business rules, p.1 | `src/curation.py`, `src/run_pipeline.py` |
-| External dataset selection and benefit, p.2 | Census feature rationale and dictionary |
-| Sprint 2: NULLs after joins, how many, treatment, p.3 | consumer/transaction coverage and feature-missingness reports |
-| Sprint 2: outlier treatment and distributions, p.3 | outlier flags, summary and Notebook histograms; no outliers omitted |
-| Sprint 3: automated end-to-end ETL, p.3 | command-line workflow and tested optional Parquet stage |
-| Readable Notebook, assumptions and reproducible code, pp.2,4 | executed Notebook, README, provenance and tests |
-
-The specification recommends SA2; this implementation uses POA because the internal
-consumer key is postcode. Document that geographic choice with your tutor. It is not
-an SA2 dataset or a fabricated postcode-to-SA2 correspondence. Geospatial visuals
-are recommended in the specification, but are not included here because this ZIP
-contains no boundary geometry. This is the Census curation component, not completion
-of the group's fraud, segmentation, modelling or final merchant ranking requirements.
 
 ## Interpretation limits
 
@@ -226,8 +214,8 @@ Within the original ABS ZIP:
 `Readme/2021POA_readme.txt`, and `Readme/2021AboutDataPacks_readme.txt`.
 The exact ZIP and selected member hashes are saved with each run.
 
-Member 2 compatibility was checked against the supplied `project2_submit(1).zip`,
-including `src/curation.py`, `src/run_pipeline.py`, `src/data_quality.py` and README.
+The postcode, order ID and transaction-output conventions were checked against the
+supplied shared curation bundle.
 
 ## Files
 

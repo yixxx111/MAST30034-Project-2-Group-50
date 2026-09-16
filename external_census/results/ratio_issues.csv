@@ -177,3 +177,16 @@ postcode,field,numerator,denominator,reason
 6427,census_group_household_share,0.0,0.0,zero_denominator
 6452,census_group_household_share,0.0,0.0,zero_denominator
 6712,census_group_household_share,0.0,0.0,zero_denominator
+6182,census_age_20_44_share,0.0,0.0,zero_denominator
+2308,census_households_weekly_income_3000_plus_share,0.0,0.0,zero_denominator
+2678,census_households_weekly_income_3000_plus_share,0.0,0.0,zero_denominator
+3045,census_households_weekly_income_3000_plus_share,0.0,0.0,zero_denominator
+3062,census_households_weekly_income_3000_plus_share,0.0,0.0,zero_denominator
+4009,census_households_weekly_income_3000_plus_share,0.0,0.0,zero_denominator
+5950,census_households_weekly_income_3000_plus_share,0.0,0.0,zero_denominator
+6068,census_households_weekly_income_3000_plus_share,0.0,0.0,zero_denominator
+6182,census_households_weekly_income_3000_plus_share,0.0,0.0,zero_denominator
+6427,census_households_weekly_income_3000_plus_share,0.0,0.0,zero_denominator
+6452,census_households_weekly_income_3000_plus_share,0.0,0.0,zero_denominator
+6712,census_households_weekly_income_3000_plus_share,0.0,0.0,zero_denominator
+6182,census_bachelor_degree_share,0.0,0.0,zero_denominator

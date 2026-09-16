@@ -1,4 +1,3 @@
-"""Clean the supplied ABS ZIP into one row per ordinary POA, without editing inputs."""
 from __future__ import annotations
 import csv
 import hashlib
@@ -7,6 +6,7 @@ import json
 import platform
 import shutil
 import tempfile
+import urllib.request
 import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
@@ -17,13 +17,15 @@ from .data_quality import profile_features, ratio, outlier_profile
 
 
 class DataQualityError(ValueError):
-    """Stop when the schema, dimension key or row-preservation contract is unsafe."""
+    pass
 
 
-# Exact headers were verified against the supplied CSVs and ABS sequential template.
-# Tuple: short header, output suffix, interpretation, validation type.
 FIELDS = {
-    'G01': [('Tot_P_P','population','Total persons, usual residence','count')],
+    'G01': [
+        ('Tot_P_P','population','Total persons, usual residence','count'),
+        ('Age_20_24_yr_P','age_20_24','Persons aged 20–24','count'),
+        ('Age_25_34_yr_P','age_25_34','Persons aged 25–34','count'),
+        ('Age_35_44_yr_P','age_35_44','Persons aged 35–44','count')],
     'G02': [
         ('Median_age_persons','median_age','Median age of persons','age'),
         ('Median_tot_hhd_inc_weekly','median_household_income_weekly','Median total household income','income'),
@@ -34,6 +36,16 @@ FIELDS = {
         ('OPF_Total_F','single_parent_families','One-parent families','count'),
         ('Other_family_F','other_families','Other families','count'),
         ('Total_F','total_families','Total families in occupied private dwellings','count')],
+    'G33': [
+        ('Tot_Tot','households_all','All households used as the income-share denominator','count'),
+        ('HI_3000_3499_Tot','households_weekly_income_3000_3499','Households with weekly income AUD 3,000–3,499','count'),
+        ('HI_3500_3999_Tot','households_weekly_income_3500_3999','Households with weekly income AUD 3,500–3,999','count'),
+        ('HI_4000_more_Tot','households_weekly_income_4000_plus','Households with weekly income AUD 4,000 or more','count')],
+    'G43': [
+        ('P_15_yrs_over_P','population_15plus_g43','Persons aged 15 years and over','count'),
+        ('Percent_Unem_loyment_P','unemployment_rate_published_pct','ABS-published unemployment rate','percentage'),
+        ('Percnt_LabForc_prticipation_P','labour_force_participation_rate_published_pct','ABS-published labour-force participation rate','percentage'),
+        ('non_sch_qual_Bchelr_Degree_P','bachelor_degree_count','Persons with a bachelor degree','count')],
     'G46B': [
         ('P_Tot_Emp_Tot','employed_persons','Employed persons aged 15+','count'),
         ('P_Tot_Unemp_Tot','unemployed_persons','Unemployed persons aged 15+','count'),
@@ -61,6 +73,7 @@ RATIOS = {
     'group_household_share': ('group_households','total_households')
 }
 ISSUE_COLUMNS = ['source_table','poa_code','field','raw_value','reason','action']
+ABS_POA_URL = 'https://www.abs.gov.au/census/find-census-data/datapacks/download/2021_GCP_POA_for_AUS_short-header.zip'
 
 
 def sha256(path: Path) -> str:
@@ -70,8 +83,21 @@ def sha256(path: Path) -> str:
     return h.hexdigest()
 
 
+def download_abs_datapack(destination: str | Path) -> Path:
+    destination = Path(destination).expanduser().resolve()
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    if destination.is_file() and destination.stat().st_size > 0:
+        return destination
+    request = urllib.request.Request(ABS_POA_URL, headers={'User-Agent': 'MAST30034-project'})
+    with urllib.request.urlopen(request, timeout=120) as response:
+        with tempfile.NamedTemporaryFile(mode='wb', prefix='abs-poa-', suffix='.zip', dir=destination.parent, delete=False) as temporary:
+            temporary_path = Path(temporary.name)
+            shutil.copyfileobj(response, temporary)
+    temporary_path.replace(destination)
+    return destination
+
+
 def normalise_postcode(values: pd.Series) -> pd.Series:
-    """Same rule as Member 2: trim 1-4 ASCII digits and left-pad; reject 3000.0."""
     s = values.astype('string').str.strip()
     return s.where(s.str.fullmatch(r'[0-9]{1,4}', na=False)).str.zfill(4)
 
@@ -116,6 +142,8 @@ def clean_table(frame: pd.DataFrame, table: str):
             why.loc[values.eq(0)] = 'zero_median_age_not_interpreted'
         elif kind == 'size':
             why.loc[values.le(0)] = 'nonpositive_household_size_not_interpreted'
+        elif kind == 'percentage':
+            why.loc[values.lt(0) | values.gt(100)] = 'percentage_outside_0_to_100'
         # Zero/negative income is not automatically missing. Keep it with a review flag.
         for idx in why[why.ne('')].index:
             issues.append(dict(source_table=table, poa_code=result.at[idx,'poa_code'],
@@ -153,6 +181,14 @@ def build_features(zip_path: str | Path):
     result = result.sort_values('postcode').reset_index(drop=True)
     result['census_source_year'] = 2021
     result['census_couple_families'] = result.census_couple_no_children_families + result.census_couple_with_children_families
+    result['census_age_20_44_count'] = result[
+        ['census_age_20_24', 'census_age_25_34', 'census_age_35_44']
+    ].sum(axis=1, min_count=3)
+    result['census_households_weekly_income_3000_plus_count'] = result[
+        ['census_households_weekly_income_3000_3499',
+         'census_households_weekly_income_3500_3999',
+         'census_households_weekly_income_4000_plus']
+    ].sum(axis=1, min_count=3)
     ratio_issues = []
     for target,(n,d) in RATIOS.items():
         result['census_'+target], reasons = ratio(result['census_'+n],result['census_'+d])
@@ -160,6 +196,19 @@ def build_features(zip_path: str | Path):
             ratio_issues.append(dict(postcode=result.at[idx,'postcode'],field='census_'+target,
                                      numerator=result.at[idx,'census_'+n],denominator=result.at[idx,'census_'+d],
                                      reason=reasons.at[idx]))
+    additional_ratios = {
+        'age_20_44_share': ('age_20_44_count', 'population'),
+        'households_weekly_income_3000_plus_share': ('households_weekly_income_3000_plus_count', 'households_all'),
+        'bachelor_degree_share': ('bachelor_degree_count', 'population_15plus_g43'),
+    }
+    for target, (n, d) in additional_ratios.items():
+        result['census_' + target], reasons = ratio(result['census_' + n], result['census_' + d])
+        for idx in reasons[reasons.ne('')].index:
+            ratio_issues.append(dict(postcode=result.at[idx,'postcode'],field='census_'+target,
+                                     numerator=result.at[idx,'census_'+n],denominator=result.at[idx,'census_'+d],
+                                     reason=reasons.at[idx]))
+    result['census_unemployment_rate_derived_pct'] = result['census_unemployment_rate'] * 100
+    result['census_labour_force_participation_rate_derived_pct'] = result['census_labour_force_participation_rate'] * 100
     for label,field in [('population','population'),('labour_force','labour_force'),
                         ('families','total_families'),('households','total_households')]:
         result['census_small_'+label] = result['census_'+field].lt(30)
@@ -177,6 +226,25 @@ def build_features(zip_path: str | Path):
         for idx in delta[delta.notna() & delta.ne(0)].index:
             checks.append(dict(postcode=result.at[idx,'postcode'],check=name,difference=delta.at[idx],
                                action='retain counts; ABS perturbation can break additivity'))
+    rate_comparisons = []
+    for measure, derived, published in [
+        ('unemployment_rate', 'census_unemployment_rate_derived_pct', 'census_unemployment_rate_published_pct'),
+        ('labour_force_participation_rate', 'census_labour_force_participation_rate_derived_pct', 'census_labour_force_participation_rate_published_pct')]:
+        for idx in result.index:
+            derived_pct, published_pct = result.at[idx, derived], result.at[idx, published]
+            if pd.notna(derived_pct) and pd.notna(published_pct):
+                status, difference = 'both_available', abs(derived_pct - published_pct)
+            elif pd.isna(derived_pct) and pd.isna(published_pct):
+                status, difference = 'both_missing', np.nan
+            elif pd.isna(derived_pct):
+                status, difference = 'derived_missing', np.nan
+            else:
+                status, difference = 'published_missing', np.nan
+            rate_comparisons.append(dict(
+                postcode=result.at[idx, 'postcode'], measure=measure,
+                derived_pct=derived_pct, published_pct=published_pct,
+                absolute_difference_pp=difference, comparison_status=status,
+                action='Use the ABS-published G43 percentage as the analysis feature; retain the derived G46B rate for QA.'))
     if np.isinf(result.select_dtypes(include='number').to_numpy(dtype=float)).any():
         raise DataQualityError('Nonfinite output')
     return result, {
@@ -184,12 +252,12 @@ def build_features(zip_path: str | Path):
         'excluded_poa_records':pd.concat(excluded,ignore_index=True),
         'numeric_issues':pd.DataFrame(issues,columns=ISSUE_COLUMNS),
         'ratio_issues':pd.DataFrame(ratio_issues,columns=['postcode','field','numerator','denominator','reason']),
+        'published_rate_comparison':pd.DataFrame(rate_comparisons,columns=['postcode','measure','derived_pct','published_pct','absolute_difference_pp','comparison_status','action']),
         'additivity_checks':pd.DataFrame(checks,columns=['postcode','check','difference','action'])
     }, members_used
 
 
 def enrich_rows(frame: pd.DataFrame, features: pd.DataFrame, postcode_column='consumer_postcode'):
-    """Many-to-one left join: retain every row; report why any postcode did not match."""
     if postcode_column not in frame: raise DataQualityError(f'Missing {postcode_column}')
     if features.postcode.isna().any() or features.postcode.duplicated().any():
         raise DataQualityError('Census postcode dimension must be non-null and unique')
@@ -211,7 +279,6 @@ def enrich_rows(frame: pd.DataFrame, features: pd.DataFrame, postcode_column='co
 
 
 def consumer_coverage(path,features,postcode_column='postcode'):
-    """Only postcode is read; no consumer names, addresses or IDs are published."""
     path = Path(path)
     with path.open(encoding='utf-8-sig') as f: header = f.readline()
     sep = '|' if '|' in header else ','
@@ -241,13 +308,20 @@ def data_dictionary(features):
     for table,fields in FIELDS.items():
         for source,target,meaning,kind in fields:
             records.append(dict(field='census_'+target,source=f'2021Census_{table}_AUST_POA.csv :: {source}',definition=meaning,
-                                unit={'count':'count','age':'years','income':'AUD/week','size':'persons/household'}[kind]))
+                                unit={'count':'count','age':'years','income':'AUD/week','size':'persons/household','percentage':'percentage points'}[kind]))
     for target,(n,d) in RATIOS.items():
         records.append(dict(field='census_'+target,source=f'census_{n} / census_{d}',
                             definition='Null for missing input, zero denominator or ratio outside [0,1]; never clipped',unit='proportion 0-1'))
     known = {r['field'] for r in records}
     descriptions = {
         'census_couple_families':('Couple families with and without children summed','count'),
+        'census_age_20_44_count':('Persons aged 20–44 summed from the three G01 age bands','count'),
+        'census_households_weekly_income_3000_plus_count':('Households with weekly income AUD 3,000 or more summed from G33 bands','count'),
+        'census_age_20_44_share':('Persons aged 20–44 divided by total population; null for undefined or perturbed ratios','proportion 0-1'),
+        'census_households_weekly_income_3000_plus_share':('Households with weekly income AUD 3,000 or more divided by all G33 households','proportion 0-1'),
+        'census_bachelor_degree_share':('Bachelor-degree count divided by G43 persons aged 15 years and over','proportion 0-1'),
+        'census_unemployment_rate_derived_pct':('G46B unemployed persons divided by labour force, multiplied by 100; QA comparison only','percentage points'),
+        'census_labour_force_participation_rate_derived_pct':('G46B labour force divided by population 15+, multiplied by 100; QA comparison only','percentage points'),
         'census_source_year':('Census reference year 2021','year'),
         'census_nonpositive_household_income':('Reported income is zero or negative; retained for review, not assumed missing','boolean'),
         'census_zero_population':('Reported population is zero','boolean'),
@@ -261,7 +335,6 @@ def data_dictionary(features):
 
 
 def publish_directory(stage: Path, target: Path):
-    """Swap only an explicitly owned output; restore old results if publication fails."""
     backup = target.with_name(target.name+'.previous')
     if backup.exists(): raise DataQualityError(f'Recovery folder exists: {backup}; inspect before rerun')
     if target.exists(): target.rename(backup)
@@ -280,7 +353,6 @@ def validate_output(target: Path,inputs,marker='census_metadata.json'):
 
 
 def run_pipeline(zip_path,output_root,consumer_csv=None,consumer_postcode_column='postcode'):
-    """Compute, audit, check immutable ZIP, then publish owned outputs."""
     import duckdb
     zip_path,output_root = Path(zip_path).resolve(),Path(output_root).resolve()
     inputs = [zip_path]+([Path(consumer_csv).resolve()] if consumer_csv else [])
@@ -299,8 +371,9 @@ def run_pipeline(zip_path,output_root,consumer_csv=None,consumer_postcode_column
         join_status = 'completed_consumer_table_only'
     if sha256(zip_path)!=input_hash or (consumer_csv and sha256(Path(consumer_csv))!=consumer_hash):
         raise DataQualityError('Source changed during processing')
-    metadata = dict(stage='external_census',schema_version=1,source_year=2021,
+    metadata = dict(stage='external_census',schema_version=2,source_year=2021,
                     created_utc=datetime.now(timezone.utc).isoformat(),source_filename=zip_path.name,
+                    source_url=ABS_POA_URL,source_bytes=zip_path.stat().st_size,
                     source_sha256=input_hash,source_members=members,clean_rows=len(features),clean_columns=len(features.columns),
                     consumer_join_status=join_status,transaction_join_status='not_run',
                     consumer_source_sha256=consumer_hash,

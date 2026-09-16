@@ -12,12 +12,15 @@ from external_census.src.enrich_transactions import enrich_transactions
 
 
 def make_zip(path, transform=None):
-    """Purpose-built known counts: couples 20 childless + 30 with children, 60 families."""
-    values = {'Tot_P_P':'100','Median_age_persons':'40','Median_tot_hhd_inc_weekly':'1200',
+    values = {'Tot_P_P':'100','Age_20_24_yr_P':'10','Age_25_34_yr_P':'20','Age_35_44_yr_P':'15',
+              'Median_age_persons':'40','Median_tot_hhd_inc_weekly':'1200',
               'Average_household_size':'2.5','CF_no_children_F':'20','CF_Total_F':'30','OPF_Total_F':'5',
               'Other_family_F':'5','Total_F':'60','P_Tot_Emp_Tot':'60','P_Tot_Unemp_Tot':'10',
               'P_Tot_LF_Tot':'70','P_Not_in_LF_Tot':'8','P_LFS_NS_Tot':'2','P_Tot_Tot':'80',
-              'Tot_FHs_Tot':'60','Tot_Lone_P_H':'30','Tot_Group_H':'10','Tot_Tot':'100'}
+              'Tot_FHs_Tot':'60','Tot_Lone_P_H':'30','Tot_Group_H':'10','Tot_Tot':'100',
+              'HI_3000_3499_Tot':'12','HI_3500_3999_Tot':'8','HI_4000_more_Tot':'10',
+              'P_15_yrs_over_P':'80','Percent_Unem_loyment_P':'14.3',
+              'Percnt_LabForc_prticipation_P':'87.5','non_sch_qual_Bchelr_Degree_P':'20'}
     with zipfile.ZipFile(path,'w') as z:
         for table, fields in FIELDS.items():
             rows = [dict(POA_CODE_2021=k,**{f[0]:values[f[0]] for f in fields}) for k in ['POA0800','POA3000','POA9494','POA9797']]
@@ -47,18 +50,28 @@ def test_realistic_formulas(source):
     assert r.census_employment_to_population_ratio==.75
     assert r.census_unemployment_rate==pytest.approx(10/70)
     assert r.census_lone_person_household_share==.3
-    assert reports['source_audit'].raw_rows.tolist()==[4]*5
-    assert len(reports['excluded_poa_records'])==10
+    assert r.census_age_20_44_count == 45
+    assert r.census_age_20_44_share == .45
+    assert r.census_households_weekly_income_3000_plus_count == 30
+    assert r.census_households_weekly_income_3000_plus_share == .3
+    assert r.census_bachelor_degree_share == .25
+    assert r.census_unemployment_rate_published_pct == 14.3
+    assert reports['source_audit'].raw_rows.tolist()==[4]*7
+    assert len(reports['excluded_poa_records'])==14
+    comparison = reports['published_rate_comparison']
+    assert len(comparison) == 4 and comparison.comparison_status.eq('both_available').all()
 
 
 @pytest.mark.parametrize('kind,value',[('count','-1'),('count','1.5'),('count','oops'),('count','inf')])
 def test_invalid_population_becomes_null(kind,value):
-    d,e,issues,_ = clean_table(pd.DataFrame({'POA_CODE_2021':['POA3000'],'Tot_P_P':[value]}),'G01')
+    d,e,issues,_ = clean_table(pd.DataFrame({'POA_CODE_2021':['POA3000'],'Tot_P_P':[value],
+                                             'Age_20_24_yr_P':['1'],'Age_25_34_yr_P':['2'],'Age_35_44_yr_P':['3']}),'G01')
     assert len(d)==1 and d.census_population.isna().all() and len(issues)==1
 
 
 def test_zero_population_retained():
-    d,_,issues,_ = clean_table(pd.DataFrame({'POA_CODE_2021':['POA3000'],'Tot_P_P':['0']}),'G01')
+    d,_,issues,_ = clean_table(pd.DataFrame({'POA_CODE_2021':['POA3000'],'Tot_P_P':['0'],
+                                             'Age_20_24_yr_P':['0'],'Age_25_34_yr_P':['0'],'Age_35_44_yr_P':['0']}),'G01')
     assert d.census_population.iloc[0]==0 and not issues
 
 
@@ -70,11 +83,13 @@ def test_missing_schema():
 @pytest.mark.parametrize('keys',[['POA3000','POA3000'],[' poa3000 ','POA3000']])
 def test_duplicate_fail(keys):
     with pytest.raises(DataQualityError,match='duplicate POA'):
-        clean_table(pd.DataFrame({'POA_CODE_2021':keys,'Tot_P_P':['10','20']}),'G01')
+        clean_table(pd.DataFrame({'POA_CODE_2021':keys,'Tot_P_P':['10','20'],
+                                  'Age_20_24_yr_P':['1','1'],'Age_25_34_yr_P':['2','2'],'Age_35_44_yr_P':['3','3']}),'G01')
 
 
 def test_invalid_and_special_key_quarantine():
-    frame = pd.DataFrame({'POA_CODE_2021':['POA3000','POA9494','POA9797','POA800','',None],'Tot_P_P':['10']*6})
+    frame = pd.DataFrame({'POA_CODE_2021':['POA3000','POA9494','POA9797','POA800','',None],'Tot_P_P':['10']*6,
+                          'Age_20_24_yr_P':['1']*6,'Age_25_34_yr_P':['2']*6,'Age_35_44_yr_P':['3']*6})
     d,e,_,audit = clean_table(frame,'G01')
     assert len(d)==1 and len(e)==5 and audit['invalid_key_rows']==3 and audit['special_geography_rows']==2
 
@@ -183,7 +198,7 @@ def test_parquet_integration_preserves_core(source,tmp_path):
     assert cov.loc['matched','dollar_value_rate']==.3
 
 
-def test_partitioned_member2_output(source,tmp_path):
+def test_partitioned_curated_output(source,tmp_path):
     run_pipeline(source,tmp_path/'census')
     base = tmp_path/'curated_transactions'
     with duckdb.connect() as con:

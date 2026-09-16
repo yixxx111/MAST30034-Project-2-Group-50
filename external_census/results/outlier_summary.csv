@@ -3,3 +3,6 @@ census_population,2641,64078.79999999994,27,0,retain; upper-tail review only
 census_median_age,2640,61.0,23,0,retain; upper-tail review only
 census_median_household_income_weekly,2641,3176.599999999998,27,0,retain; upper-tail review only
 census_avg_household_size,2637,3.3,24,0,retain; upper-tail review only
+census_age_20_44_count,2641,21652.0,27,0,retain; upper-tail review only
+census_households_weekly_income_3000_plus_count,2641,5335.199999999999,27,0,retain; upper-tail review only
+census_bachelor_degree_count,2641,9078.8,27,0,retain; upper-tail review only
