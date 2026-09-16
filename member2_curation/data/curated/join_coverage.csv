@@ -1,0 +1,4 @@
+join_name,input_rows,matched_rows,unmatched_rows,match_rate
+transactions_to_user_mapping,14195505,14195505,0,1.0
+user_mapping_to_consumers,14195505,14195505,0,1.0
+transactions_to_merchants,14195505,13614675,580830,0.95908352679246

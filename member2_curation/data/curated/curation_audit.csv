@@ -1,0 +1,6 @@
+stage,input_rows,output_rows,quarantined_rows,removed_pct_of_input,notes
+raw_transaction_partitions,14195505,14195505,0,0.0,All discovered transaction snapshot partitions; coverage is recorded separately.
+basic_validation,14195505,14195505,0,0.0,"Missing keys, invalid dates, and non-positive or non-finite amounts are quarantined."
+duplicate_order_resolution,14195505,14195505,0,0.0,One exact duplicate is retained; all conflicting duplicate order IDs are quarantined.
+consumer_internal_joins,14195505,14195505,0,0.0,Inner joins are required to preserve row count or the run fails.
+merchant_left_join_and_output,14195505,14195505,0,0.0,Unmatched merchants are retained with merchant_master_matched = false.

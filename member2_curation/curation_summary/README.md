@@ -1,42 +1,19 @@
-# Transaction Curation and Internal Joins
+# Curation summary
 
-## Deliverable
+Open `curation_summary.ipynb` for code and saved actual outputs, or `curation_summary.html` for a presentation view.
 
-`src/curation.py` builds a partitioned `curated_transactions` Parquet dataset and its
-audit artefacts. It is invoked by the shared command:
+The summary covers inputs and join keys, cleaning rules, row-count audit, join coverage, actual timeline, amount distribution and outlier impact, merchant non-match diagnostics, field-level missingness and downstream limitations.
+
+The original `src/` cleaning logic and tests are unchanged. This update adds `build_analysis.py` and five aggregate CSV reports under `analysis_results/`. All seven notebook code cells executed successfully, and all four existing tests passed again. Notebook execution used an in-process IPython session; saved plots and tables derive from the actual supplied data.
+
+To rebuild aggregates after a new pipeline run, run from the module root:
 
 ```bash
-python -m src.run_pipeline --data-root tables --output-root data/curated
+python curation_summary/build_analysis.py --merchant-master /path/to/tbl_merchants.parquet
 ```
 
-The source tables are never changed. `tables/` and `data/curated/` are local, Git-ignored
-directories because they contain supplied or derived large data.
+Then run the notebook from this folder. Displaying/rerunning the notebook requires the CSV reports in `../data/curated/` and `analysis_results/`, but not the full transaction Parquet. Regenerating the analysis reports does require the full Parquet dataset. Without the optional merchant-master argument, the ABN diagnostic is omitted.
 
-## Current full-data run
+Core results: 14,195,505 unique orders, zero quarantined rows, 100% consumer join coverage and 95.91% merchant row coverage. Unmatched merchants account for 8.59% of recorded transaction value. The global p99 flags 141,956 transactions accounting for 20.94% of value; these are retained, not classified as fraud.
 
-| Check | Result |
-| --- | ---: |
-| Raw and curated transaction rows | 14,195,505 |
-| Quarantined transactions | 0 |
-| Unique curated order IDs | 14,195,505 |
-| User-to-consumer match rate | 100.00% |
-| Merchant master match rate | 95.91% |
-| Unmatched merchant transactions | 580,830 across 396 ABNs |
-| Transaction period | 2021-02-28 to 2022-10-26 |
-| Amount p99 | AUD 1,619.27 |
-
-The unmatched merchant rows are retained with `merchant_master_matched = false`; they are
-not silently dropped. The `merchant_match_exceptions.csv` artefact records their value and
-time coverage for later follow-up.
-
-## Handoff contract
-
-The curated fact table retains `user_id`, `merchant_abn`, and `order_datetime`, enabling
-later enrichment to attach consumer or merchant fraud labels. It also retains normalised
-`consumer_postcode` for ABS/SA2 enrichment. Consumer name and address are deliberately
-excluded from the curated output.
-
-Run `curation_summary.ipynb` after the pipeline to present the audit, join coverage,
-snapshot coverage and merchant-match exception summary. The pipeline also creates
-`data_quality_profile.csv`, which separates quarantined raw-data issues, merchant
-left-join non-matches, and fraud/external datasets that are not yet integrated.
+The full local copy includes the unchanged transaction data with restored standard filenames. A separate lightweight submission ZIP omits Parquet files but includes the code, reports and executed notebook. Do not treat that ZIP as the full data archive.
