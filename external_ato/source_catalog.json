@@ -1,0 +1,32 @@
+{
+  "id": "5fa69f19-ec44-4c46-88eb-0f6fd5c2f43b",
+  "title": "Taxation statistics - postcode data",
+  "license_title": "Creative Commons Attribution 2.5 Australia",
+  "notes": "Selected items for individuals, by state/territory and postcode, 1994-95 to 2022-23 income years.\r\n\r\nCare needs to be taken when comparing data across multiple years:\r\n\r\nFor years 2010-11 onwards, the data includes a breakup by taxable status (ie taxable individuals and non-taxable individuals). \r\nFor 2009-10 and earlier years, the data includes taxable individuals only. ",
+  "resources": [
+    {
+      "cache_last_updated": null,
+      "cache_url": null,
+      "created": "2024-08-15T00:17:06.116148",
+      "datastore_active": false,
+      "datastore_contains_all_records_of_source_file": false,
+      "description": "Includes counts and labels for all individuals, as well as data split between taxable and non-taxable individuals.",
+      "format": "XLSX",
+      "hash": "",
+      "id": "00847743-8b5b-4d41-a15a-1a28cf00ea81",
+      "last_modified": "2024-08-15T00:00:00",
+      "metadata_modified": "2024-08-15T00:38:22.970555",
+      "mimetype": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "mimetype_inner": null,
+      "name": "2021-22 income year - all individuals",
+      "package_id": "5fa69f19-ec44-4c46-88eb-0f6fd5c2f43b",
+      "position": 3,
+      "resource_type": null,
+      "size": 8345770,
+      "state": "active",
+      "url": "https://data.gov.au/data/dataset/5fa69f19-ec44-4c46-88eb-0f6fd5c2f43b/resource/00847743-8b5b-4d41-a15a-1a28cf00ea81/download/ts22individual06taxablestatusstatesa4postcode.xlsx",
+      "url_type": "upload",
+      "zip_extract": false
+    }
+  ]
+}

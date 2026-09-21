@@ -1,0 +1,16 @@
+Taxation statistics 2021–22
+Table 6: Individuals
+Selected items, by taxable status, state/territory1, Statistical Area Level 4 (SA4)2, and postcode, 2021–22 income year3
+
+Notes:
+* | Totals may not equal the sum of components due to rounding.
+* | To meet privacy regulations, some items may be combined with other groups or not included.
+
+1 | State/territory is based on residential and postal postcodes as stated on the Individual income tax return forms. Client register information is supplemented where required.
+2 | Statistical Area Level 4 (SA4) is based on the ASGS Geographic Correspondences (2021) and the residential and postal postcodes as stated on the Individual income tax returns. Where a postcode corresponds to multiple SA4 regions, all individuals in the postcode are allocated to the SA4 with the largest weight.
+3 | The statistics for the 2021–22 income year were sourced from 2022 Individual income tax returns processed by 31 October 2023. The statistics are not necessarily complete. 
+4 | Refers to the label on the individual return form and will not necessarily equal the sum of component labels. 
+
+Table 6A | Selected items, by taxable status, state/territory, Statistical Area Level 4 (SA4), and postcode, 2021–22 income year
+
+Table 6B | Selected items, by state/territory, Statistical Area Level 4 (SA4), and postcode, 2021–22 income year

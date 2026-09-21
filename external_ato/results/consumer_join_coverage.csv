@@ -1,0 +1,10 @@
+scope,metric,rows,denominator,rate
+consumer_rows,matched,414825,499999,0.8296516593033186
+consumer_rows,postcode_not_in_ato,85174,499999,0.1703483406966814
+consumer_rows,missing_or_invalid_postcode,0,499999,0.0
+distinct_valid_postcodes,matched,2627,3167,0.8294916324597411
+distinct_valid_postcodes,postcode_not_in_ato,540,3167,0.17050836754025891
+consumer_rows,matched_but_consumer_state_differs_from_ato_state,889,499999,0.001778003556007112
+consumer_rows,postcode_in_ato_and_census,404185,499999,0.8083716167432334
+consumer_rows,postcode_in_ato_and_seifa,404185,499999,0.8083716167432334
+consumer_rows,postcode_in_all_sources,404185,499999,0.8083716167432334

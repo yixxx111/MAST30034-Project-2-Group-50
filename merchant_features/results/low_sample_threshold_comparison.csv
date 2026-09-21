@@ -1,0 +1,13 @@
+flag,threshold,merchants_flagged
+low_sample_short_window,2,15
+low_sample_short_window,3,15
+low_sample_short_window,4,19
+low_sample_short_window,6,25
+low_sample_few_transactions,5,94
+low_sample_few_transactions,10,220
+low_sample_few_transactions,20,440
+low_sample_few_transactions,50,854
+low_sample_few_active_months,2,17
+low_sample_few_active_months,3,44
+low_sample_few_active_months,4,76
+low_sample_few_active_months,6,144

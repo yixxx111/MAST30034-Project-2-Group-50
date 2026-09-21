@@ -1,0 +1,47 @@
+field,definition,unit,source
+merchant_abn,Australian Business Number of the merchant; primary key,id,derived
+merchant_name,"Merchant trading name, from tbl_merchants",string,derived
+merchant_category,One of 25 categories parsed from tbl_merchants.tags,category,derived
+merchant_pricing_level,"Pricing/risk tier parsed from tbl_merchants.tags, A (lowest) to E (highest)",category A-E,derived
+merchant_take_rate_pct,BNPL take rate parsed from tbl_merchants.tags,percent,derived
+has_merchant_master_record,"False for merchant_abn seen in transactions but absent from tbl_merchants (396 of 4,422); category/pricing/take rate are null in that case. Kept for audit; whether these should be eligible for the final recommendation list is a separate policy decision",boolean,derived
+total_transactions,"Count of curated transactions for this merchant, all time (交易规模)",count,derived
+total_revenue,"Sum of dollar_value across this merchant's curated transactions, all time (交易规模)",AUD,derived
+avg_transaction_value,"total_revenue / total_transactions, all time (客单价)",AUD,derived
+unique_consumers,"Distinct consumer_id count for this merchant, all time",count,derived
+repeat_consumer_share,"Share of this merchant's consumers with more than one transaction, all time (复购)",proportion 0-1,derived
+first_order_date,Earliest curated transaction date for this merchant,date,derived
+last_order_date,Latest curated transaction date for this merchant,date,derived
+active_months_all_time,"Distinct (order_year, order_month) buckets with >=1 transaction, all time including the two partial calendar months (2021-02, 2022-10); NOT the basis for the trend/CV below",count,derived
+potential_months_in_window,"Number of calendar months between this merchant's first and last transaction, clipped to the full-month window (2021, 3)..(2022, 9); the denominator for the trend/CV estimate below",count,derived
+active_months_in_window,"Of potential_months_in_window, how many actually had a transaction (the rest are zero-filled, not missing)",count,derived
+normalized_monthly_revenue_trend,"Linear trend slope of monthly revenue vs. month, divided by mean monthly revenue (regr_slope/regr_avgy), over the zero-filled full-month window; positive = growing. This is a normalised slope, NOT a month-over-month or year-over-year growth rate -- do not read it as a percentage change (增长)","proportion of mean revenue, per month",derived
+monthly_revenue_cv,Coefficient of variation (stddev/mean) of monthly revenue over the same zero-filled window; higher = less stable (稳定性),ratio,derived
+low_sample_short_window,True when potential_months_in_window < 3 (including merchants with no activity inside the window at all). Team-chosen threshold; see low_sample_threshold_comparison.csv for how alternates change the count,boolean,derived
+transactions_in_window,"Count of this merchant's transactions falling inside the fixed growth window (2021-03..2022-09) -- NOT the same as total_transactions (all-time). This is the basis for low_sample_few_transactions, since the growth/CV estimate only ever looks at the window: a review found 18 merchants with 10-12 transactions all-time but only 8-9 inside the window, which total_transactions alone would not have caught",count,derived
+low_sample_few_transactions,True when transactions_in_window < 10 (NOT total_transactions all-time -- see transactions_in_window). Catches merchants whose first/last transaction span many months but who actually have very few transactions inside the growth window -- a case low_sample_short_window alone misses. Team-chosen threshold,boolean,derived
+low_sample_few_active_months,"True when active_months_in_window < 3, i.e. few months with any transaction even though the calendar span looks long. Team-chosen threshold",boolean,derived
+low_sample_growth_estimate,True if ANY of low_sample_short_window / low_sample_few_transactions / low_sample_few_active_months is true. normalized_monthly_revenue_trend and monthly_revenue_cv should be treated with caution (or excluded) for these merchants in any ranking. Replaces a single calendar-span-only check that a review found missed 187 merchants with <10 total transactions and 29 merchants with only 1-2 active months in the window,boolean,derived
+estimated_bnpl_revenue,total_revenue * merchant_take_rate_pct / 100; null when take rate is unavailable,AUD,derived
+regional_data_coverage_rate_all_sources,Share of this merchant's revenue from transactions whose consumer postcode matched all three external sources (census+seifa+ato),proportion 0-1,derived
+census_data_coverage_rate,"Share of this merchant's REVENUE ($) from transactions whose consumer postcode matched the Census source. Amount-weighted -- kept for reference, but the census_* feature averages below are computed as row-count-weighted averages, so this figure can diverge from their true reliability (see census_data_coverage_rate_by_count)",proportion 0-1,derived
+seifa_data_coverage_rate,"As above (amount-weighted), for the SEIFA source",proportion 0-1,derived
+ato_data_coverage_rate,"As above (amount-weighted), for the ATO source",proportion 0-1,derived
+regional_data_coverage_rate_all_sources_by_count,"Share of this merchant's TRANSACTIONS (not revenue) whose consumer postcode matched all three sources. Row-count-weighted -- matches the weighting used to compute the regional feature averages themselves, so this is the PRIMARY figure to use when explaining how reliable those averages are (a review measured up to a 41.35-point gap between the amount- and count-weighted ATO coverage for individual merchants)",proportion 0-1,derived
+census_data_coverage_rate_by_count,Row-count-weighted coverage for the Census source specifically -- primary reliability figure for the census_* feature columns,proportion 0-1,derived
+seifa_data_coverage_rate_by_count,Row-count-weighted coverage for the SEIFA source specifically -- primary reliability figure for the seifa_* feature columns,proportion 0-1,derived
+ato_data_coverage_rate_by_count,Row-count-weighted coverage for the ATO source specifically -- primary reliability figure for the ato_* feature columns,proportion 0-1,derived
+ato_small_denominator_share_of_matched,"Of this merchant's ATO-matched transactions, the share whose postcode's ATO ratios rest on fewer than 100 individuals (external_ato's ato_small_denominator quality flag). High values mean the ato_* feature columns for this merchant rest on statistically unstable postcode-level ratios, independent of whether ATO matched at all. Null when the merchant has no ATO-matched transactions",proportion 0-1,derived
+census_population,Total usual residents in the merchant's customer postcodes (transaction-weighted average),count,census
+census_median_household_income_weekly,Median weekly household income of customer postcodes (transaction-weighted average),AUD/week,census
+census_avg_household_size,Average household size of customer postcodes (transaction-weighted average),persons/household,census
+census_single_parent_family_share,One-parent families / total families in customer postcodes (transaction-weighted average); replaces the raw one-parent-family count to avoid double-counting regional population scale,proportion 0-1,census
+census_couple_with_children_family_share,Couple-with-children families / total families in customer postcodes (transaction-weighted average); replaces the raw count for the same reason,proportion 0-1,census
+census_unemployment_rate_published_pct,ABS-published unemployment rate of customer postcodes (transaction-weighted average),percentage points,census
+census_labour_force_participation_rate_published_pct,ABS-published labour-force participation rate of customer postcodes (transaction-weighted average),percentage points,census
+seifa_irsd_national_decile,"IRSD (disadvantage) national decile of customer postcodes; 1=most disadvantaged, 10=least (transaction-weighted average). The raw score is dropped: it is a near-linear transform of the decile at postcode granularity",integer 1-10 (avg),seifa
+seifa_irsad_national_decile,IRSAD (advantage/disadvantage) national decile of customer postcodes (transaction-weighted average); score dropped for the same reason,integer 1-10 (avg),seifa
+seifa_ier_national_decile,IER (economic resources) national decile of customer postcodes (transaction-weighted average); score dropped for the same reason,integer 1-10 (avg),seifa
+ato_taxable_income_or_loss_per_reporter,Average taxable income per reporter (2021-22) in customer postcodes (transaction-weighted average),AUD/year,ato
+ato_salary_or_wages_per_recipient,Average salary/wages per recipient (2021-22) in customer postcodes (transaction-weighted average),AUD/year,ato
+ato_net_tax_payer_share,Share of individuals paying net tax (2021-22) in customer postcodes (transaction-weighted average),proportion 0-1,ato

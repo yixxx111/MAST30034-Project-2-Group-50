@@ -1,0 +1,8 @@
+field,records_compared,records_only_in_6a,records_only_in_6b,records_beyond_tolerance,max_abs_difference,tolerance
+ato_individual_count,2639,0,0,0,0,0
+ato_taxable_income_reporter_count,2639,0,0,0,0,0
+ato_taxable_income_or_loss_total,2639,0,0,0,0,2
+ato_salary_recipient_count,2639,0,0,0,0,0
+ato_salary_or_wages_total,2639,0,0,0,0,2
+ato_net_tax_count,2639,0,0,0,0,0
+ato_net_tax_total,2639,0,0,0,0,2

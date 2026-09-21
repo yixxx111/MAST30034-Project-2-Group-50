@@ -1,0 +1,117 @@
+{
+  "source_url": "https://data.gov.au/data/dataset/5fa69f19-ec44-4c46-88eb-0f6fd5c2f43b/resource/00847743-8b5b-4d41-a15a-1a28cf00ea81/download/ts22individual06taxablestatusstatesa4postcode.xlsx",
+  "catalog_url": "https://data.gov.au/data/dataset/taxation-statistics-postcode-data",
+  "license": "CC BY 2.5 Australia",
+  "source_file": "ts22individual06taxablestatusstatesa4postcode.xlsx",
+  "source_sha256": "00d1df972edc02af9d61d9968d586c7292dc7785f75e35242699af4ad3833b3d",
+  "worksheet": "Table 6B",
+  "income_year": "2021-22",
+  "source_processing_cutoff": "2023-10-31",
+  "catalog_resource_created": "2024-08-15T00:17:06.116148 (not asserted to be first publication date)",
+  "intended_use": "Retrospective area context only; not available during 2021-22 transactions",
+  "run_utc": "2026-09-20T07:55:30.261642+00:00",
+  "python": "3.14.6",
+  "openpyxl": "3.1.5",
+  "pyarrow": "25.0.1",
+  "parquet_postcode_type": "string",
+  "comparison_sources": {
+    "census": {
+      "path": "external_census/results/census_clean.csv",
+      "sha256": "33e5fbe49e85f511b16dd49db05a0a0d2e6bdc70c2563ef36b69d972c4a4d86a"
+    },
+    "seifa": {
+      "path": "external_seifa/results/seifa_clean.csv",
+      "sha256": "68d350b45bb60d8bbe2a3e782625e89134720b6d11bfd99e4201028640789b37"
+    }
+  },
+  "source_data_rows": 2639,
+  "clean_rows": 2630,
+  "clean_columns": 21,
+  "excluded_rows": 9,
+  "quality_issue_cells": 0,
+  "source_individuals_total": 15535395,
+  "excluded_individuals_by_reason": {
+    "overseas_aggregate": 123657,
+    "state_other_aggregate": 11496
+  },
+  "observed_min_individual_count": 51,
+  "small_denominator_threshold": 100,
+  "small_denominator_postcodes": 255,
+  "sa4_state_other_postcodes": 69,
+  "table6a_reconciliation_records_beyond_tolerance": 0,
+  "consumer_coverage": [
+    {
+      "scope": "consumer_rows",
+      "metric": "matched",
+      "rows": 414825,
+      "denominator": 499999,
+      "rate": 0.8296516593033186
+    },
+    {
+      "scope": "consumer_rows",
+      "metric": "postcode_not_in_ato",
+      "rows": 85174,
+      "denominator": 499999,
+      "rate": 0.1703483406966814
+    },
+    {
+      "scope": "consumer_rows",
+      "metric": "missing_or_invalid_postcode",
+      "rows": 0,
+      "denominator": 499999,
+      "rate": 0.0
+    },
+    {
+      "scope": "distinct_valid_postcodes",
+      "metric": "matched",
+      "rows": 2627,
+      "denominator": 3167,
+      "rate": 0.8294916324597411
+    },
+    {
+      "scope": "distinct_valid_postcodes",
+      "metric": "postcode_not_in_ato",
+      "rows": 540,
+      "denominator": 3167,
+      "rate": 0.17050836754025891
+    },
+    {
+      "scope": "consumer_rows",
+      "metric": "matched_but_consumer_state_differs_from_ato_state",
+      "rows": 889,
+      "denominator": 499999,
+      "rate": 0.001778003556007112
+    },
+    {
+      "scope": "consumer_rows",
+      "metric": "postcode_in_ato_and_census",
+      "rows": 404185,
+      "denominator": 499999,
+      "rate": 0.8083716167432334
+    },
+    {
+      "scope": "consumer_rows",
+      "metric": "postcode_in_ato_and_seifa",
+      "rows": 404185,
+      "denominator": 499999,
+      "rate": 0.8083716167432334
+    },
+    {
+      "scope": "consumer_rows",
+      "metric": "postcode_in_all_sources",
+      "rows": 404185,
+      "denominator": 499999,
+      "rate": 0.8083716167432334
+    }
+  ],
+  "transaction_enrichment": "not_run",
+  "policies": [
+    "No imputation, trimming, winsorisation or statistical outlier deletion",
+    "Negative income/loss amounts retained; invalid counts become null and are audited",
+    "Unrecognised text numeric markers fail pending source review",
+    "Means use each corresponding label count; no median inferred",
+    "Total income label not selected; avoid treating correlated income measures as independent evidence",
+    "State-other and Overseas aggregates excluded with separate reasons; unknown labels or states fail",
+    "Only Table 6B used; Table 6A taxable-status subsets not stacked into it"
+  ]
+}

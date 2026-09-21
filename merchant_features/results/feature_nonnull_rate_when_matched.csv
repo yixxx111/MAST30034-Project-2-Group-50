@@ -1,0 +1,14 @@
+field,source,transactions_with_source_matched,transactions_with_source_matched_and_field_nonnull,nonnull_rate_when_matched
+census_population,census,11855228,11855228,1.0
+census_median_household_income_weekly,census,11855228,11855228,1.0
+census_avg_household_size,census,11855228,11832803,0.9981084294625122
+census_single_parent_family_share,census,11855228,11753229,0.9913962852506928
+census_couple_with_children_family_share,census,11855228,11753229,0.9913962852506928
+census_unemployment_rate_published_pct,census,11855228,11855228,1.0
+census_labour_force_participation_rate_published_pct,census,11855228,11855228,1.0
+seifa_irsd_national_decile,seifa,11855228,11766161,0.9924871120150536
+seifa_irsad_national_decile,seifa,11855228,11766161,0.9924871120150536
+seifa_ier_national_decile,seifa,11855228,11766161,0.9924871120150536
+ato_taxable_income_or_loss_per_reporter,ato,11760045,11760045,1.0
+ato_salary_or_wages_per_recipient,ato,11760045,11760045,1.0
+ato_net_tax_payer_share,ato,11760045,11760045,1.0
