@@ -121,7 +121,7 @@ for details; this only affects that module's pipeline, not this one.
 
 ### 7. October chart wording overclaimed / mislabeled
 
-Applies to `industry_growth`, not this module — see `industry_growth/VALIDATION.md`.
+Applies to `member3_industry_growth`, not this module — see `member3_industry_growth/VALIDATION.md`.
 
 ### 8. `--overwrite` deleted too broadly and too early
 

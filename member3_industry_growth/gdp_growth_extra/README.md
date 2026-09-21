@@ -34,7 +34,7 @@ equipment rental, beauty/repair services — map to a different division. The
 25-category table is included because that's what was asked for, but the
 **group-level view is the more informative one**: it averages the (already
 division-derived) growth rates within each of the 5 existing
-`industry_growth` groups, giving 5 distinct trajectories instead of a table
+`member3_industry_growth` groups, giving 5 distinct trajectories instead of a table
 that is mostly one repeated number.
 
 ## Files

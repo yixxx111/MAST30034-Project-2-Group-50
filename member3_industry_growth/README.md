@@ -7,7 +7,7 @@ whole Australian retail industry — every chart title says so explicitly.
 
 ## Industry groups
 
-The 25 MCC-style merchant categories (parsed in `merchant_features`) are grouped as
+The 25 MCC-style merchant categories (parsed in `member3_merchant_features`) are grouped as
 follows -- the project's agreed grouping (see `category_to_group_mapping.csv` for the
 full category-level mapping), reconstructed here from the merchant-count breakdown
 already agreed on and verified to match exactly against `tbl_merchants`:
@@ -56,7 +56,7 @@ total is affected by incomplete observation and cannot be directly read as a bus
 decline; the observed daily average during this period is higher."** Fixed by:
 
 - Both partial months are now excluded from the fixed analysis window
-  (`WINDOW_START=2021-03`, `WINDOW_END=2022-09` -- matching `merchant_features`'
+  (`WINDOW_START=2021-03`, `WINDOW_END=2022-09` -- matching `member3_merchant_features`'
   window exactly), which drives the growth line, the trend/CV summary, and the
   revenue-share chart.
 - October is **kept in the underlying data** (`industry_monthly_revenue.csv`,
@@ -76,7 +76,7 @@ decline; the observed daily average during this period is higher."** Fixed by:
   revenue used in the growth chart.
 - `industry_growth_summary.csv` -- one row per group, computed over full months only:
   total revenue, revenue share, merchant count, trend/CV (same definitions as
-  `merchant_features`, aggregated to group level).
+  `member3_merchant_features`, aggregated to group level).
 - `category_to_group_mapping.csv` -- the 25-category -> 5-group lookup.
 - `data_dictionary.csv`, `metadata.json` (includes the Sep->Oct daily-avg % change by
   group).
@@ -86,7 +86,7 @@ decline; the observed daily average during this period is higher."** Fixed by:
 ```bash
 cd industry_growth
 python build_industry_growth.py --overwrite   # requires ../member2_curation/data/curated/curated_transactions
-                                               # and ../merchant_features/results/merchant_features.parquet
+                                               # and ../member3_merchant_features/results/merchant_features.parquet
 python -m unittest tests.test_build_industry_growth -v
 ```
 

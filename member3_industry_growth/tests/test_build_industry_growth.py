@@ -16,7 +16,7 @@ class MappingTests(unittest.TestCase):
         self.assertEqual(len(set(CATEGORY_TO_GROUP.values()) - {"Unclassified"}), 5)
 
     def test_group_merchant_counts_match_agreed_breakdown(self):
-        merchant_features = Path(__file__).resolve().parents[2] / "merchant_features/results/merchant_features.parquet"
+        merchant_features = Path(__file__).resolve().parents[2] / "member3_merchant_features/results/merchant_features.parquet"
         if not merchant_features.exists():
             raise unittest.SkipTest("merchant_features.parquet not built yet")
         df = pd.read_parquet(merchant_features, columns=["merchant_category", "has_merchant_master_record"])
