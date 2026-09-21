@@ -20,7 +20,7 @@ metadata.json):**
 | Unclassified | +6.7% |
 
 Every group's daily average **rose**. Fix: the growth line/trend/revenue-share now use
-only the fixed full-month window 2021-03..2022-09 (matching `merchant_features`); October
+only the fixed full-month window 2021-03..2022-09 (matching `member3_merchant_features`); October
 is kept in the raw data and shown as a clearly separate point on the growth chart, plus a
 dedicated chart makes the daily-average direction visible.
 
@@ -71,7 +71,7 @@ Revenue share by group (full months only, 2021-03 to 2022-09):
 - **Mapping tests** (2): all 25 categories map to exactly one of the 5 groups; merchant
   counts per group match the agreed breakdown (867/827/806/827/699), cross-checked
   against `tbl_merchants`.
-- **Window config** (1): the full-month window matches `merchant_features` exactly
+- **Window config** (1): the full-month window matches `member3_merchant_features` exactly
   (2021-03..2022-09).
 - **Output invariants** (7): both partial months (2021-02, 2022-10) are present in the
   panel but flagged `is_full_month=False`; every group's revenue index starts at exactly

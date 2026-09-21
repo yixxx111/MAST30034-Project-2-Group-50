@@ -67,8 +67,8 @@ def log(msg):
 
 ROOT = Path(__file__).resolve().parent.parent
 TRANSACTIONS = ROOT / "member2_curation/data/curated/curated_transactions"
-MERCHANT_FEATURES = ROOT / "merchant_features/results/merchant_features.parquet"
-DEFAULT_OUTPUT = ROOT / "industry_growth/results"
+MERCHANT_FEATURES = ROOT / "member3_merchant_features/results/merchant_features.parquet"
+DEFAULT_OUTPUT = ROOT / "member3_industry_growth/results"
 
 # Same fixed full-month window as merchant_features (build_merchant_features.WINDOW_START/END),
 # repeated here rather than imported since the two modules are otherwise independent.
@@ -158,7 +158,7 @@ def _assert_safe_output_dir(out):
     Unsafe only if `out` itself IS the project root or a known input path, or is an
     ANCESTOR of one (deleting out's contents would then delete that input or the whole
     project) -- `out` simply living *under* the project root, as the default
-    industry_growth/results does, is normal and fine.
+    member3_industry_growth/results does, is normal and fine.
     """
     out = out.resolve()
     unsafe = {ROOT.resolve(), TRANSACTIONS.resolve(), MERCHANT_FEATURES.resolve().parent}
@@ -459,7 +459,7 @@ def _run_pipeline(out, charts):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT, help="Output directory (default: industry_growth/results)")
+    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT, help="Output directory (default: member3_industry_growth/results)")
     parser.add_argument("--overwrite", action="store_true", help="Replace an existing non-empty output directory instead of refusing to run")
     args = parser.parse_args()
     run(args.output.resolve(), args.overwrite)

@@ -98,13 +98,13 @@ quarantined_rows 0、unmatched_merchant_rows 580,830、amount_p99 1619.272755948
   更高比例的邮编没有同时出现在 census/seifa/ato 三个源里，不是随机缺失。**任何按州或按商户所在州
   切片的下游分析（含第 4 步行业增长图、后续排名模型）都应该知道这一点**：外部特征对 NSW/WA/NT 商户
   客群的覆盖天然更差，不能把"该商户没有地区特征"和"该商户地区特征不重要"混为一谈。行业维度的覆盖率
-  拆分见 `merchant_features/VALIDATION.md`（现在按 census/seifa/ato 三个来源分别报告覆盖率）。
+  拆分见 `member3_merchant_features/VALIDATION.md`（现在按 census/seifa/ato 三个来源分别报告覆盖率）。
 
 - 交易层用的是精简维度表（邮编 + 4 个匹配标记位），不含 141 个具体外部特征值：把 141 列贴到 1400 万行
   上计算和存储成本都很高，而且这一步真正要的是匹配率和行数一致性，不是每笔交易自己的地区特征。
 
   **（本次复核修正措辞）** 之前这里写"具体特征值留到商户级聚合之后再关联"，这个说法把顺序说反了。
-  实际做法（`merchant_features/build_merchant_features.py`）是：**先在交易层按 consumer_postcode
+  实际做法（`member3_merchant_features/build_merchant_features.py`）是：**先在交易层按 consumer_postcode
   关联外部特征**（这样才能算出交易层面的匹配标记和覆盖率），**再按 merchant_abn 把已关联特征值的
   交易聚合成商户级别的交易量加权平均**——不是先把交易聚合成商户、再拿商户去关联邮编。本模块（
   `external_integration`）只做交易层"先关联、只留标记位"这一步验证匹配率和行数一致性；具体的

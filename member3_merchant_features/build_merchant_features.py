@@ -56,7 +56,7 @@ def log(msg):
 ROOT = Path(__file__).resolve().parent.parent
 TRANSACTIONS = ROOT / "member2_curation/data/curated/curated_transactions"
 MERCHANTS_PARQUET = ROOT / "tables/tbl_merchants.parquet"
-DEFAULT_OUTPUT = ROOT / "merchant_features/results"
+DEFAULT_OUTPUT = ROOT / "member3_merchant_features/results"
 
 sys.path.insert(0, str(ROOT / "external_integration"))
 from integrate import SOURCES, build_dimension  # noqa: E402
@@ -204,7 +204,7 @@ def _assert_safe_output_dir(out):
     """Refuse an output path that would let --overwrite delete source code or inputs.
 
     The danger is deleting FILES INSIDE `out`: that's fine when `out` is an ordinary
-    subdirectory this module owns (e.g. the default merchant_features/results, which
+    subdirectory this module owns (e.g. the default member3_merchant_features/results, which
     naturally lives *under* the project root -- that nesting is expected and safe), but
     unsafe if `out` itself IS the project root or an input directory, or is an ANCESTOR of
     one (deleting out's contents would then delete that input or the whole project).
@@ -632,7 +632,7 @@ def _run_pipeline(out, local):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT, help="Output directory (default: merchant_features/results)")
+    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT, help="Output directory (default: member3_merchant_features/results)")
     parser.add_argument("--overwrite", action="store_true", help="Replace an existing non-empty output directory instead of refusing to run")
     args = parser.parse_args()
     run(args.output.resolve(), args.overwrite)

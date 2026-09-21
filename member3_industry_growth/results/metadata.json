@@ -1,7 +1,7 @@
 {
   "run_utc": "2026-09-21T07:13:19.922183+00:00",
   "input_transactions": "/sessions/rcw-012yayq5n9xnibrqls1vebow/mnt/Downloads/project2/MAST30034-Project-2-Group-50/member2_curation/data/curated/curated_transactions",
-  "input_merchant_features": "/sessions/rcw-012yayq5n9xnibrqls1vebow/mnt/Downloads/project2/MAST30034-Project-2-Group-50/merchant_features/results/merchant_features.parquet",
+  "input_merchant_features": "/sessions/rcw-012yayq5n9xnibrqls1vebow/mnt/Downloads/project2/MAST30034-Project-2-Group-50/member3_merchant_features/results/merchant_features.parquet",
   "n_categories": 25,
   "n_groups": 6,
   "n_unclassified_merchants": 396,
