@@ -1,0 +1,22 @@
+field,source_or_formula,unit,definition
+ato_individual_count,Individuals no.,count,All individuals in this Table 6B area record
+ato_taxable_income_reporter_count,Taxable income or loss4 no.,count,Count for the taxable income or loss label; not the total individual count
+ato_taxable_income_or_loss_total,Taxable income or loss4 $,AUD/year,Published total taxable income or loss
+ato_salary_recipient_count,Salary or wages no.,count,Count for salary or wages label
+ato_salary_or_wages_total,Salary or wages $,AUD/year,Published total salary or wages
+ato_net_tax_count,Net tax no.,count,Count for net tax label; not a fraud or default count
+ato_net_tax_total,Net tax $,AUD/year,Published net tax amount
+ato_taxable_income_or_loss_per_reporter,ato_taxable_income_or_loss_total / ato_taxable_income_reporter_count,AUD/year,"Derived total divided by corresponding label count, not median or disposable income"
+ato_salary_or_wages_per_recipient,ato_salary_or_wages_total / ato_salary_recipient_count,AUD/year,Derived salary total divided by salary recipient count
+ato_salary_recipient_share,ato_salary_recipient_count / ato_individual_count,proportion 0-1,Salary recipients divided by all individuals; not a population employment rate
+ato_net_tax_payer_share,ato_net_tax_count / ato_individual_count,proportion 0-1,Individuals with a net tax amount divided by all individuals; not a compliance or risk measure
+postcode,Postcode,string,Four digits; format-valid does not establish postal validity
+ato_income_year,Workbook title,year range,2021-22 income year; retrospective context
+ato_state,State/ Territory1,category,Source state; postcode-based ATO allocation
+ato_sa4_name,Statistical Area Level 4 (SA4)2,category,"Source SA4 name; largest-weight correspondence, not precise consumer location; placeholder when ato_sa4_is_state_other"
+ato_sa4_is_state_other,"ato_sa4_name matches ""<STATE> other""",boolean,Source uses a state-other placeholder; cause is not inferred from the label
+ato_min_derived_denominator,min of the denominators used by derived fields,count,Smallest count behind any derived mean/share for this postcode
+ato_small_denominator,ato_min_derived_denominator < 100,boolean,Project review threshold only; derived means on few individuals are unstable; no row deletion
+ato_nonpositive_taxable_income_total,ato_taxable_income_or_loss_total <= 0,boolean,Review flag; source value retained
+ato_any_feature_missing,Selected numeric fields,boolean,Any selected or derived numeric feature unavailable
+ato_quality_issue,quality_issues.csv,boolean,At least one recorded numeric/ratio/count issue

@@ -16,3 +16,8 @@ member1_eda_bundle.zip
 *.duckdb.wal
 .DS_Store
 Thumbs.db
+
+# Large transaction fact table (14M+ rows) reproduced locally from the Canvas-supplied
+# raw data; too large for GitHub, matches the pattern member2 already used for tables/.
+member2_curation/data/curated/curated_transactions/
+member2_curation/data/curated/quarantined_transactions.parquet

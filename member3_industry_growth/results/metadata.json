@@ -1,0 +1,39 @@
+{
+  "run_utc": "2026-09-21T07:13:19.922183+00:00",
+  "input_transactions": "/sessions/rcw-012yayq5n9xnibrqls1vebow/mnt/Downloads/project2/MAST30034-Project-2-Group-50/member2_curation/data/curated/curated_transactions",
+  "input_merchant_features": "/sessions/rcw-012yayq5n9xnibrqls1vebow/mnt/Downloads/project2/MAST30034-Project-2-Group-50/member3_merchant_features/results/merchant_features.parquet",
+  "n_categories": 25,
+  "n_groups": 6,
+  "n_unclassified_merchants": 396,
+  "full_month_window": {
+    "start": "2021-03",
+    "end": "2022-09"
+  },
+  "partial_months": [
+    [
+      2021,
+      2
+    ],
+    [
+      2022,
+      10
+    ]
+  ],
+  "sep_to_oct_2022_daily_avg_pct_change_by_group": {
+    "Art, Gifts, Jewellery & Fashion": 0.03984208584854994,
+    "Creative, Books & Leisure": 0.05660624266487547,
+    "Digital, Technology & Communications": 0.04416818963960944,
+    "Home, Garden & Living": 0.03890158289886943,
+    "Mobility, Health & Specialist Services": 0.04708845299108797,
+    "Unclassified": 0.0673201008627427
+  },
+  "total_revenue_all_months": "2359703946.358783",
+  "total_revenue_full_months_only": "2234541395.3595095",
+  "grouping_method": "Manual grouping of 25 MCC-style categories into 5 industry groups, confirmed with project owner; see category_to_group_mapping.csv",
+  "scope_caveat": "All figures describe this dataset's sample merchants only; they are not a claim about the whole Australian retail industry.",
+  "versions": {
+    "duckdb": "1.5.5",
+    "pandas": "2.3.3",
+    "matplotlib": "3.10.9"
+  }
+}

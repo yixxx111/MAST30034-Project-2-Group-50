@@ -1,0 +1,12 @@
+field,available_consumer_rows,missing_consumer_rows,total_consumer_rows
+ato_individual_count,414825,85174,499999
+ato_taxable_income_reporter_count,414825,85174,499999
+ato_taxable_income_or_loss_total,414825,85174,499999
+ato_salary_recipient_count,414825,85174,499999
+ato_salary_or_wages_total,414825,85174,499999
+ato_net_tax_count,414825,85174,499999
+ato_net_tax_total,414825,85174,499999
+ato_taxable_income_or_loss_per_reporter,414825,85174,499999
+ato_salary_or_wages_per_recipient,414825,85174,499999
+ato_salary_recipient_share,414825,85174,499999
+ato_net_tax_payer_share,414825,85174,499999

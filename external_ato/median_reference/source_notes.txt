@@ -1,0 +1,11 @@
+Taxation statistics 2021–22
+Table 8: Individuals
+Median and average3 taxable income by state/territory and postcode2, 2003–04, 2013–14 to 2021–22 income years1
+
+Notes:
+* | Totals may not equal the sum of components due to rounding.
+* | To meet privacy regulations, some items may be combined with other groups or not included.
+
+1 | The statistics for the 2021–22 income year were sourced from 2022 Individual income tax returns processed by 31 October 2023. The statistics are not necessarily complete. 
+2 | The statistics for the 2003–04 and 2013–14 income years only include postcodes which had at least 200 returns lodged for both years. After 2013–14, statistics are only included if there were more than 200 lodgments for the relevant year. The 2017–18 income year is the first year in which PO box postcodes have been included. Data may be available in Snapshot detailed table 7D.
+3 | For 2016–17 onwards, medians and averages are generated using all individuals who reported at the taxable income or loss label, whether the value was zero or not.

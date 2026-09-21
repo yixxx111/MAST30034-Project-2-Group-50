@@ -1,0 +1,16 @@
+field,definition,unit
+industry_group,"One of 5 business-defined industry groups (or 'Unclassified' for merchants with no tbl_merchants record, kept for audit only, not a 6th official segment); see category_to_group_mapping.csv",category
+order_year,Calendar year of the transaction month,year
+order_month,Calendar month of the transaction month,month 1-12
+revenue,Sum of dollar_value across curated transactions for this group and month (this sample's merchants only),AUD
+transactions,Count of curated transactions for this group and month,count
+active_merchants,Distinct merchant_abn with at least one transaction in this group and month,count
+days_with_data,Distinct calendar days with at least one transaction in this group and month,count
+avg_daily_revenue,"revenue / days_with_data; comparable across a partial and a full month, unlike the raw monthly total",AUD/day
+is_full_month,True for the 2021-03 .. 2022-09 window (every day present); False for 2021-02 (1/28 days) and 2022-10 (26/31 days). Growth/CV/revenue-share are computed on True rows only,boolean
+revenue_index,"revenue / (this group's revenue in its first FULL month) * 100; lets groups of very different scale be compared on one axis. Computed for every month for context, but the base is always a full month","index, first full month = 100"
+total_revenue,Sum of revenue across full months only for this group,AUD
+revenue_share,total_revenue / total_revenue across all groups (full months only),proportion 0-1
+normalized_monthly_revenue_trend,"Linear trend slope of monthly group revenue vs. month, divided by mean monthly group revenue (regr_slope/regr_avgy), over full months only; NOT a month-over-month growth rate","proportion of mean revenue, per month"
+monthly_revenue_cv,"Coefficient of variation (stddev/mean) of monthly group revenue, full months only",ratio
+n_merchants,Distinct merchants in this industry group (from merchant_features),count
