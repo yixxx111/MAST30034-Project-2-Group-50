@@ -1,0 +1,10 @@
+excel_row,source_postcode,source_state,reason,individual_count,taxable_income_or_loss_total
+29,ACT other,ACT,state_other_aggregate,191,17448826
+655,NSW other,NSW,state_other_aggregate,3390,352021518
+700,NT other,NT,state_other_aggregate,154,10979731
+701,Overseas,Overseas,overseas_aggregate,123657,3888397917
+1136,QLD other,QLD,state_other_aggregate,1740,119192037
+1467,SA other,SA,state_other_aggregate,681,46739456
+1582,TAS other,TAS,state_other_aggregate,216,12737134
+2283,VIC other,VIC,state_other_aggregate,1901,135885138
+2641,WA other,WA,state_other_aggregate,3223,285196601

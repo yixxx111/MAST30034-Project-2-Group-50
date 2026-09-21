@@ -1,21 +1,14 @@
 {
   "pipeline_stage": "transaction_curation",
-  "run_utc": "2026-09-15T07:48:35.828104+00:00",
-  "data_root": "/Users/youning/Documents/Codex/2026-09-15/referenced-chatgpt-conversation-this-is-an/work/member2_inputs",
-  "transaction_glob": "/Users/youning/Documents/Codex/2026-09-15/referenced-chatgpt-conversation-this-is-an/work/member2_inputs/transactions_*_snapshot/order_datetime=*/part-*.parquet",
+  "run_utc": "2026-09-20T09:48:21.416542+00:00",
+  "data_root": "reproduced_locally_by_claude_from_canvas_supplied_data",
   "amount_p99": 1619.2727559488073,
   "result": {
-    "curated_transactions_path": "/Users/youning/Documents/Codex/2026-09-15/referenced-chatgpt-conversation-this-is-an/outputs/member2_curation/data/curated/curated_transactions",
-    "audit_path": "/Users/youning/Documents/Codex/2026-09-15/referenced-chatgpt-conversation-this-is-an/outputs/member2_curation/data/curated/curation_audit.csv",
-    "quarantine_path": "/Users/youning/Documents/Codex/2026-09-15/referenced-chatgpt-conversation-this-is-an/outputs/member2_curation/data/curated/quarantined_transactions.parquet",
-    "merchant_exceptions_path": "/Users/youning/Documents/Codex/2026-09-15/referenced-chatgpt-conversation-this-is-an/outputs/member2_curation/data/curated/merchant_match_exceptions.csv",
-    "join_coverage_path": "/Users/youning/Documents/Codex/2026-09-15/referenced-chatgpt-conversation-this-is-an/outputs/member2_curation/data/curated/join_coverage.csv",
-    "snapshot_coverage_path": "/Users/youning/Documents/Codex/2026-09-15/referenced-chatgpt-conversation-this-is-an/outputs/member2_curation/data/curated/snapshot_coverage.csv",
-    "data_quality_profile_path": "/Users/youning/Documents/Codex/2026-09-15/referenced-chatgpt-conversation-this-is-an/outputs/member2_curation/data/curated/data_quality_profile.csv",
     "input_rows": 14195505,
     "curated_rows": 14195505,
     "quarantined_rows": 0,
     "unmatched_merchant_rows": 580830,
     "amount_p99": 1619.2727559488073
-  }
+  },
+  "reproducibility_check": "matches original member2_curation/data/curated/curation_metadata.json: input_rows 14195505, quarantined_rows 0, unmatched_merchant_rows 580830, amount_p99 1619.2727559488073"
 }

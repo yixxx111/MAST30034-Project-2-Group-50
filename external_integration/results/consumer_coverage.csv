@@ -1,0 +1,5 @@
+scope,metric,rows,denominator,rate,matched_amount,total_amount
+consumer,census_matched,416818,499999,0.8336376672753345,,
+consumer,seifa_matched,416818,499999,0.8336376672753345,,
+consumer,ato_matched,414825,499999,0.8296516593033186,,
+consumer,all_sources_matched,404185,499999,0.8083716167432334,,

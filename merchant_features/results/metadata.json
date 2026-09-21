@@ -1,0 +1,50 @@
+{
+  "run_utc": "2026-09-21T07:12:42.449075+00:00",
+  "input_transactions": "/sessions/rcw-012yayq5n9xnibrqls1vebow/mnt/Downloads/project2/MAST30034-Project-2-Group-50/member2_curation/data/curated/curated_transactions",
+  "input_merchants_master": "/sessions/rcw-012yayq5n9xnibrqls1vebow/mnt/Downloads/project2/MAST30034-Project-2-Group-50/tables/tbl_merchants.parquet",
+  "external_sources": {
+    "census": {
+      "path": "/sessions/rcw-012yayq5n9xnibrqls1vebow/mnt/Downloads/project2/MAST30034-Project-2-Group-50/external_census/results/census_clean.parquet",
+      "sha256": "1870e0959ec494b041d31c323706beb9845ed75a1d4a8352f1c91ef7340ea5d6",
+      "rows": 2641,
+      "reference_year": "2021"
+    },
+    "seifa": {
+      "path": "/sessions/rcw-012yayq5n9xnibrqls1vebow/mnt/Downloads/project2/MAST30034-Project-2-Group-50/external_seifa/results/seifa_clean.parquet",
+      "sha256": "8308dbbcf6886d2df89fdad8279180d677038cfa3565fd10554759cf15fe84ef",
+      "rows": 2641,
+      "reference_year": "2021"
+    },
+    "ato": {
+      "path": "/sessions/rcw-012yayq5n9xnibrqls1vebow/mnt/Downloads/project2/MAST30034-Project-2-Group-50/external_ato/results/ato_clean.parquet",
+      "sha256": "7c0147dea91f3c162327d171d1344291cd79e73af11ff60910e5e1087787a09e",
+      "rows": 2630,
+      "reference_year": "2021-22"
+    }
+  },
+  "growth_window": {
+    "start": "2021-03",
+    "end": "2022-09",
+    "min_months_for_growth": 3,
+    "min_transactions_for_growth": 10,
+    "min_active_months_for_growth": 3
+  },
+  "selected_external_feature_count": 13,
+  "output_rows": 4422,
+  "merchants_with_master_record": 4026,
+  "merchants_without_master_record": 396,
+  "merchants_flagged_low_sample_growth": 220,
+  "merchants_flagged_low_sample_short_window": 15,
+  "merchants_flagged_low_sample_few_transactions": 220,
+  "merchants_flagged_low_sample_few_active_months": 44,
+  "feature_nonnull_rate_when_matched_min": 0.9913962852506928,
+  "distinct_merchant_categories": 25,
+  "total_revenue_reconciliation": {
+    "sum_merchant_total_revenue": "2359703946.3588085",
+    "sum_transaction_dollar_value": "2359703946.358765"
+  },
+  "versions": {
+    "duckdb": "1.5.5",
+    "pandas": "2.3.3"
+  }
+}

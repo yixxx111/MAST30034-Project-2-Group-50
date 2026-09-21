@@ -1,0 +1,12 @@
+{
+  "source_url": "https://data.gov.au/data/dataset/4be150cc-8f84-46b8-8c61-55ff1d48a700/resource/9bd9d5af-2c09-405f-b484-69c862f4dc2e/download/ts22individual08medianaveragetaxableincomestatepostcode.xlsx",
+  "source_sha256": "c7db2f111d106d380f204bfe8264a2d47f7ebe4a5acecc24453d5d82c402539a",
+  "rows": 2317,
+  "available_2021_22": 2270,
+  "unavailable_2021_22": 47,
+  "purpose": "Optional candidate reference, not merged into ato_clean or used to choose ranking features",
+  "na_policy": "Preserved as null; no zero-fill or interpolation",
+  "publication_rule": "After 2013-14, statistics only included where more than 200 lodgments in relevant year",
+  "population_note": "From 2016-17 medians/averages use individuals who reported taxable income or loss label, including zero values",
+  "caution": "Do not infer Table 8 median from Table 6B totals; confirm cross-table average differences before substitution"
+}
