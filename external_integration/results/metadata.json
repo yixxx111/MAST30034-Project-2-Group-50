@@ -1,0 +1,52 @@
+{
+  "run_utc": "2026-09-20T14:59:03.829346+00:00",
+  "sources": {
+    "census": {
+      "path": "/sessions/rcw-012yayq5n9xnibrqls1vebow/mnt/Downloads/project2/MAST30034-Project-2-Group-50/external_census/results/census_clean.parquet",
+      "sha256": "1870e0959ec494b041d31c323706beb9845ed75a1d4a8352f1c91ef7340ea5d6",
+      "rows": 2641,
+      "reference_year": "2021"
+    },
+    "seifa": {
+      "path": "/sessions/rcw-012yayq5n9xnibrqls1vebow/mnt/Downloads/project2/MAST30034-Project-2-Group-50/external_seifa/results/seifa_clean.parquet",
+      "sha256": "8308dbbcf6886d2df89fdad8279180d677038cfa3565fd10554759cf15fe84ef",
+      "rows": 2641,
+      "reference_year": "2021"
+    },
+    "ato": {
+      "path": "/sessions/rcw-012yayq5n9xnibrqls1vebow/mnt/Downloads/project2/MAST30034-Project-2-Group-50/external_ato/results/ato_clean.parquet",
+      "sha256": "7c0147dea91f3c162327d171d1344291cd79e73af11ff60910e5e1087787a09e",
+      "rows": 2630,
+      "reference_year": "2021-22"
+    }
+  },
+  "dimension_rows": 2710,
+  "dimension_columns": 141,
+  "consumers": {
+    "input_rows": 499999,
+    "output_rows": 499999,
+    "unique_ids": 499999,
+    "original_columns_unchanged": true,
+    "amount_sum_before": null,
+    "amount_sum_after": null
+  },
+  "transactions": {
+    "input_rows": 14195505,
+    "output_rows": 14195505,
+    "unique_ids": 14195505,
+    "original_columns_unchanged": true,
+    "amount_sum_before": "2359703946.3588110473",
+    "amount_sum_after": "2359703946.3588110473"
+  },
+  "temporal_use": "retrospective context; no historical availability assertion",
+  "privacy": "consumer-level outputs stay under ignored local_data; no names, addresses or gender exported",
+  "versions": {
+    "duckdb": "1.5.5",
+    "pandas": "2.3.3"
+  },
+  "consumer_input_sha256": "9fe2b21bf5dd2d13a55551f977212abe0eff844b9e47a411ff974d70463d86c1",
+  "transactions_join_mode": "light_match_flags_only",
+  "transaction_input": "/sessions/rcw-012yayq5n9xnibrqls1vebow/mnt/Downloads/project2/MAST30034-Project-2-Group-50/member2_curation/data/curated/curated_transactions",
+  "transaction_coverage_by_state": "transaction_coverage_by_state.csv",
+  "transaction_amount_by_match_status": "transaction_amount_by_match_status.csv"
+}

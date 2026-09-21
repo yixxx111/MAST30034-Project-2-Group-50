@@ -1,0 +1,12 @@
+field,rows,missing,minimum,maximum,zero_count,negative_count
+ato_individual_count,2630,0,51,80121,0,0
+ato_taxable_income_reporter_count,2630,0,45,78627,0,0
+ato_taxable_income_or_loss_total,2630,0,1368192,5074195666,0,0
+ato_salary_recipient_count,2630,0,19,67350,0,0
+ato_salary_or_wages_total,2630,0,903413,4403558129,0,0
+ato_net_tax_count,2630,0,19,60662,0,0
+ato_net_tax_total,2630,0,205586,1541280906,0,0
+ato_taxable_income_or_loss_per_reporter,2630,0,20967.24255319149,359642.1016897081,0,0
+ato_salary_or_wages_per_recipient,2630,0,17797.955555555556,159445.35714285713,0,0
+ato_salary_recipient_share,2630,0,0.2,0.9965156794425087,0,0
+ato_net_tax_payer_share,2630,0,0.22142857142857142,0.9825783972125436,0,0

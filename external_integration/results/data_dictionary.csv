@@ -1,0 +1,142 @@
+field,source,definition,unit,source_or_formula
+census_poa_code,census,Normalised ABS POA key,string,POA_CODE_2021
+census_population,census,"Total persons, usual residence",count,2021Census_G01_AUST_POA.csv :: Tot_P_P
+census_age_20_24,census,Persons aged 20–24,count,2021Census_G01_AUST_POA.csv :: Age_20_24_yr_P
+census_age_25_34,census,Persons aged 25–34,count,2021Census_G01_AUST_POA.csv :: Age_25_34_yr_P
+census_age_35_44,census,Persons aged 35–44,count,2021Census_G01_AUST_POA.csv :: Age_35_44_yr_P
+census_median_age,census,Median age of persons,years,2021Census_G02_AUST_POA.csv :: Median_age_persons
+census_median_household_income_weekly,census,Median total household income,AUD/week,2021Census_G02_AUST_POA.csv :: Median_tot_hhd_inc_weekly
+census_avg_household_size,census,Average usual residents per occupied private dwelling,persons/household,2021Census_G02_AUST_POA.csv :: Average_household_size
+census_couple_no_children_families,census,Couple families without children,count,2021Census_G29_AUST_POA.csv :: CF_no_children_F
+census_couple_with_children_families,census,Couple families WITH children; excludes childless couples,count,2021Census_G29_AUST_POA.csv :: CF_Total_F
+census_single_parent_families,census,One-parent families,count,2021Census_G29_AUST_POA.csv :: OPF_Total_F
+census_other_families,census,Other families,count,2021Census_G29_AUST_POA.csv :: Other_family_F
+census_total_families,census,Total families in occupied private dwellings,count,2021Census_G29_AUST_POA.csv :: Total_F
+census_households_all,census,All households used as the income-share denominator,count,2021Census_G33_AUST_POA.csv :: Tot_Tot
+census_households_weekly_income_3000_3499,census,"Households with weekly income AUD 3,000–3,499",count,2021Census_G33_AUST_POA.csv :: HI_3000_3499_Tot
+census_households_weekly_income_3500_3999,census,"Households with weekly income AUD 3,500–3,999",count,2021Census_G33_AUST_POA.csv :: HI_3500_3999_Tot
+census_households_weekly_income_4000_plus,census,"Households with weekly income AUD 4,000 or more",count,2021Census_G33_AUST_POA.csv :: HI_4000_more_Tot
+census_population_15plus_g43,census,Persons aged 15 years and over,count,2021Census_G43_AUST_POA.csv :: P_15_yrs_over_P
+census_unemployment_rate_published_pct,census,ABS-published unemployment rate,percentage points,2021Census_G43_AUST_POA.csv :: Percent_Unem_loyment_P
+census_labour_force_participation_rate_published_pct,census,ABS-published labour-force participation rate,percentage points,2021Census_G43_AUST_POA.csv :: Percnt_LabForc_prticipation_P
+census_bachelor_degree_count,census,Persons with a bachelor degree,count,2021Census_G43_AUST_POA.csv :: non_sch_qual_Bchelr_Degree_P
+census_employed_persons,census,Employed persons aged 15+,count,2021Census_G46B_AUST_POA.csv :: P_Tot_Emp_Tot
+census_unemployed_persons,census,Unemployed persons aged 15+,count,2021Census_G46B_AUST_POA.csv :: P_Tot_Unemp_Tot
+census_labour_force,census,Persons aged 15+ in labour force,count,2021Census_G46B_AUST_POA.csv :: P_Tot_LF_Tot
+census_not_in_labour_force,census,Persons aged 15+ outside labour force,count,2021Census_G46B_AUST_POA.csv :: P_Not_in_LF_Tot
+census_labour_status_not_stated,census,Persons aged 15+ with labour force status not stated,count,2021Census_G46B_AUST_POA.csv :: P_LFS_NS_Tot
+census_population_15plus,census,"All persons aged 15+, including labour status not stated",count,2021Census_G46B_AUST_POA.csv :: P_Tot_Tot
+census_family_households,census,Family households,count,2021Census_G42_AUST_POA.csv :: Tot_FHs_Tot
+census_lone_person_households,census,Lone-person households,count,2021Census_G42_AUST_POA.csv :: Tot_Lone_P_H
+census_group_households,census,Group households,count,2021Census_G42_AUST_POA.csv :: Tot_Group_H
+census_total_households,census,Total classified occupied private dwellings,count,2021Census_G42_AUST_POA.csv :: Tot_Tot
+census_source_year,census,Census reference year 2021,year,derived
+census_couple_families,census,Couple families with and without children summed,count,derived
+census_age_20_44_count,census,Persons aged 20–44 summed from the three G01 age bands,count,derived
+census_households_weekly_income_3000_plus_count,census,"Households with weekly income AUD 3,000 or more summed from G33 bands",count,derived
+census_employment_to_population_ratio,census,"Null for missing input, zero denominator or ratio outside [0,1]; never clipped",proportion 0-1,census_employed_persons / census_population_15plus
+census_unemployment_rate,census,"Null for missing input, zero denominator or ratio outside [0,1]; never clipped",proportion 0-1,census_unemployed_persons / census_labour_force
+census_labour_force_participation_rate,census,"Null for missing input, zero denominator or ratio outside [0,1]; never clipped",proportion 0-1,census_labour_force / census_population_15plus
+census_couple_no_children_family_share,census,"Null for missing input, zero denominator or ratio outside [0,1]; never clipped",proportion 0-1,census_couple_no_children_families / census_total_families
+census_couple_with_children_family_share,census,"Null for missing input, zero denominator or ratio outside [0,1]; never clipped",proportion 0-1,census_couple_with_children_families / census_total_families
+census_couple_family_share,census,"Null for missing input, zero denominator or ratio outside [0,1]; never clipped",proportion 0-1,census_couple_families / census_total_families
+census_single_parent_family_share,census,"Null for missing input, zero denominator or ratio outside [0,1]; never clipped",proportion 0-1,census_single_parent_families / census_total_families
+census_family_household_share,census,"Null for missing input, zero denominator or ratio outside [0,1]; never clipped",proportion 0-1,census_family_households / census_total_households
+census_lone_person_household_share,census,"Null for missing input, zero denominator or ratio outside [0,1]; never clipped",proportion 0-1,census_lone_person_households / census_total_households
+census_group_household_share,census,"Null for missing input, zero denominator or ratio outside [0,1]; never clipped",proportion 0-1,census_group_households / census_total_households
+census_age_20_44_share,census,Persons aged 20–44 divided by total population; null for undefined or perturbed ratios,proportion 0-1,derived
+census_households_weekly_income_3000_plus_share,census,"Households with weekly income AUD 3,000 or more divided by all G33 households",proportion 0-1,derived
+census_bachelor_degree_share,census,Bachelor-degree count divided by G43 persons aged 15 years and over,proportion 0-1,derived
+census_unemployment_rate_derived_pct,census,"G46B unemployed persons divided by labour force, multiplied by 100; QA comparison only",percentage points,derived
+census_labour_force_participation_rate_derived_pct,census,"G46B labour force divided by population 15+, multiplied by 100; QA comparison only",percentage points,derived
+census_small_population,census,"Denominator below 30; review flag, not an exclusion rule",boolean,derived
+census_small_labour_force,census,"Denominator below 30; review flag, not an exclusion rule",boolean,derived
+census_small_families,census,"Denominator below 30; review flag, not an exclusion rule",boolean,derived
+census_small_households,census,"Denominator below 30; review flag, not an exclusion rule",boolean,derived
+census_nonpositive_household_income,census,"Reported income is zero or negative; retained for review, not assumed missing",boolean,derived
+census_zero_population,census,Reported population is zero,boolean,derived
+census_any_feature_missing,census,At least one numeric clean feature is unavailable,boolean,derived
+census_ratio_quality_issue,census,"At least one derived ratio falls outside [0,1]",boolean,derived
+census_matched,census,Source postcode exists,boolean,
+seifa_poa_code,seifa,ABS 2021 Postal Area key,string,derived from postcode
+seifa_irsd_score,seifa,ABS standardised index score; lower means relatively more disadvantaged,score,ABS Index of Relative Socio-economic Disadvantage table
+seifa_irsd_national_rank,seifa,National Rank; low rank means lower index score,rank,ABS Index of Relative Socio-economic Disadvantage table
+seifa_irsd_national_decile,seifa,"National Decile; 1 is lowest, 10 highest",integer 1-10,ABS Index of Relative Socio-economic Disadvantage table
+seifa_irsd_national_percentile,seifa,"National Percentile; 1 is lowest, 100 highest",integer 1-100,ABS Index of Relative Socio-economic Disadvantage table
+seifa_irsd_state_rank,seifa,State Rank; low rank means lower index score,rank,ABS Index of Relative Socio-economic Disadvantage table
+seifa_irsd_state_decile,seifa,"State Decile; 1 is lowest, 10 highest",integer 1-10,ABS Index of Relative Socio-economic Disadvantage table
+seifa_irsd_state_percentile,seifa,"State Percentile; 1 is lowest, 100 highest",integer 1-100,ABS Index of Relative Socio-economic Disadvantage table
+seifa_irsd_minimum_sa1_score,seifa,Minimum contributing SA1 index score,score,ABS Index of Relative Socio-economic Disadvantage table
+seifa_irsd_maximum_sa1_score,seifa,Maximum contributing SA1 index score,score,ABS Index of Relative Socio-economic Disadvantage table
+seifa_irsd_population_without_sa1_score_share,seifa,Share of usual resident population without an SA1-level score,proportion 0-1,ABS Index of Relative Socio-economic Disadvantage table
+seifa_irsad_score,seifa,ABS standardised index score; lower means relatively more disadvantaged,score,ABS Index of Relative Socio-economic Advantage and Disadvantage table
+seifa_irsad_national_rank,seifa,National Rank; low rank means lower index score,rank,ABS Index of Relative Socio-economic Advantage and Disadvantage table
+seifa_irsad_national_decile,seifa,"National Decile; 1 is lowest, 10 highest",integer 1-10,ABS Index of Relative Socio-economic Advantage and Disadvantage table
+seifa_irsad_national_percentile,seifa,"National Percentile; 1 is lowest, 100 highest",integer 1-100,ABS Index of Relative Socio-economic Advantage and Disadvantage table
+seifa_irsad_state_rank,seifa,State Rank; low rank means lower index score,rank,ABS Index of Relative Socio-economic Advantage and Disadvantage table
+seifa_irsad_state_decile,seifa,"State Decile; 1 is lowest, 10 highest",integer 1-10,ABS Index of Relative Socio-economic Advantage and Disadvantage table
+seifa_irsad_state_percentile,seifa,"State Percentile; 1 is lowest, 100 highest",integer 1-100,ABS Index of Relative Socio-economic Advantage and Disadvantage table
+seifa_irsad_minimum_sa1_score,seifa,Minimum contributing SA1 index score,score,ABS Index of Relative Socio-economic Advantage and Disadvantage table
+seifa_irsad_maximum_sa1_score,seifa,Maximum contributing SA1 index score,score,ABS Index of Relative Socio-economic Advantage and Disadvantage table
+seifa_irsad_population_without_sa1_score_share,seifa,Share of usual resident population without an SA1-level score,proportion 0-1,ABS Index of Relative Socio-economic Advantage and Disadvantage table
+seifa_ier_score,seifa,ABS standardised index score; lower means relatively more disadvantaged,score,ABS Index of Economic Resources table
+seifa_ier_national_rank,seifa,National Rank; low rank means lower index score,rank,ABS Index of Economic Resources table
+seifa_ier_national_decile,seifa,"National Decile; 1 is lowest, 10 highest",integer 1-10,ABS Index of Economic Resources table
+seifa_ier_national_percentile,seifa,"National Percentile; 1 is lowest, 100 highest",integer 1-100,ABS Index of Economic Resources table
+seifa_ier_state_rank,seifa,State Rank; low rank means lower index score,rank,ABS Index of Economic Resources table
+seifa_ier_state_decile,seifa,"State Decile; 1 is lowest, 10 highest",integer 1-10,ABS Index of Economic Resources table
+seifa_ier_state_percentile,seifa,"State Percentile; 1 is lowest, 100 highest",integer 1-100,ABS Index of Economic Resources table
+seifa_ier_minimum_sa1_score,seifa,Minimum contributing SA1 index score,score,ABS Index of Economic Resources table
+seifa_ier_maximum_sa1_score,seifa,Maximum contributing SA1 index score,score,ABS Index of Economic Resources table
+seifa_ier_population_without_sa1_score_share,seifa,Share of usual resident population without an SA1-level score,proportion 0-1,ABS Index of Economic Resources table
+seifa_ieo_score,seifa,ABS standardised index score; lower means relatively more disadvantaged,score,ABS Index of Education and Occupation table
+seifa_ieo_national_rank,seifa,National Rank; low rank means lower index score,rank,ABS Index of Education and Occupation table
+seifa_ieo_national_decile,seifa,"National Decile; 1 is lowest, 10 highest",integer 1-10,ABS Index of Education and Occupation table
+seifa_ieo_national_percentile,seifa,"National Percentile; 1 is lowest, 100 highest",integer 1-100,ABS Index of Education and Occupation table
+seifa_ieo_state_rank,seifa,State Rank; low rank means lower index score,rank,ABS Index of Education and Occupation table
+seifa_ieo_state_decile,seifa,"State Decile; 1 is lowest, 10 highest",integer 1-10,ABS Index of Education and Occupation table
+seifa_ieo_state_percentile,seifa,"State Percentile; 1 is lowest, 100 highest",integer 1-100,ABS Index of Education and Occupation table
+seifa_ieo_minimum_sa1_score,seifa,Minimum contributing SA1 index score,score,ABS Index of Education and Occupation table
+seifa_ieo_maximum_sa1_score,seifa,Maximum contributing SA1 index score,score,ABS Index of Education and Occupation table
+seifa_ieo_population_without_sa1_score_share,seifa,Share of usual resident population without an SA1-level score,proportion 0-1,ABS Index of Education and Occupation table
+seifa_population,seifa,Usual resident population,persons,ABS SEIFA summary / excluded areas
+seifa_state,seifa,"State, territory, Other Territories or Cross Border",category,ABS index tables
+seifa_caution_low_sa1_representation,seifa,ABS caution flag: area not well represented by SA1s,boolean,ABS index tables
+seifa_cross_state_boundary,seifa,POA crosses a state or territory boundary,boolean,ABS index tables
+seifa_irsd_excluded,seifa,ABS did not publish this index score for the POA,boolean,ABS Index of Relative Socio-economic Disadvantage table
+seifa_irsd_national_percentile_scaled,seifa,National percentile divided by 100; higher means less disadvantage / more advantage,proportion 0-1,seifa_irsd_national_percentile / 100
+seifa_irsad_excluded,seifa,ABS did not publish this index score for the POA,boolean,ABS Index of Relative Socio-economic Advantage and Disadvantage table
+seifa_irsad_national_percentile_scaled,seifa,National percentile divided by 100; higher means less disadvantage / more advantage,proportion 0-1,seifa_irsad_national_percentile / 100
+seifa_ier_excluded,seifa,ABS did not publish this index score for the POA,boolean,ABS Index of Economic Resources table
+seifa_ier_national_percentile_scaled,seifa,National percentile divided by 100; higher means less disadvantage / more advantage,proportion 0-1,seifa_ier_national_percentile / 100
+seifa_ieo_excluded,seifa,ABS did not publish this index score for the POA,boolean,ABS Index of Education and Occupation table
+seifa_ieo_national_percentile_scaled,seifa,National percentile divided by 100; higher means less disadvantage / more advantage,proportion 0-1,seifa_ieo_national_percentile / 100
+seifa_score_missing_count,seifa,Number of the four SEIFA index scores unavailable,count 0-4,derived
+seifa_any_score_available,seifa,At least one SEIFA index score is available,boolean,derived
+seifa_all_scores_available,seifa,All four SEIFA index scores are available,boolean,derived
+seifa_any_index_excluded,seifa,ABS excluded at least one index for this POA,boolean,Table 6
+seifa_source_year,seifa,SEIFA reference year,year,constant 2021
+seifa_matched,seifa,Source postcode exists,boolean,
+ato_income_year,ato,2021-22 income year; retrospective context,year range,Workbook title
+ato_state,ato,Source state; postcode-based ATO allocation,category,State/ Territory1
+ato_sa4_name,ato,"Source SA4 name; largest-weight correspondence, not precise consumer location; placeholder when ato_sa4_is_state_other",category,Statistical Area Level 4 (SA4)2
+ato_sa4_is_state_other,ato,Source uses a state-other placeholder; cause is not inferred from the label,boolean,"ato_sa4_name matches ""<STATE> other"""
+ato_individual_count,ato,All individuals in this Table 6B area record,count,Individuals no.
+ato_taxable_income_reporter_count,ato,Count for the taxable income or loss label; not the total individual count,count,Taxable income or loss4 no.
+ato_taxable_income_or_loss_total,ato,Published total taxable income or loss,AUD/year,Taxable income or loss4 $
+ato_salary_recipient_count,ato,Count for salary or wages label,count,Salary or wages no.
+ato_salary_or_wages_total,ato,Published total salary or wages,AUD/year,Salary or wages $
+ato_net_tax_count,ato,Count for net tax label; not a fraud or default count,count,Net tax no.
+ato_net_tax_total,ato,Published net tax amount,AUD/year,Net tax $
+ato_taxable_income_or_loss_per_reporter,ato,"Derived total divided by corresponding label count, not median or disposable income",AUD/year,ato_taxable_income_or_loss_total / ato_taxable_income_reporter_count
+ato_salary_or_wages_per_recipient,ato,Derived salary total divided by salary recipient count,AUD/year,ato_salary_or_wages_total / ato_salary_recipient_count
+ato_salary_recipient_share,ato,Salary recipients divided by all individuals; not a population employment rate,proportion 0-1,ato_salary_recipient_count / ato_individual_count
+ato_net_tax_payer_share,ato,Individuals with a net tax amount divided by all individuals; not a compliance or risk measure,proportion 0-1,ato_net_tax_count / ato_individual_count
+ato_min_derived_denominator,ato,Smallest count behind any derived mean/share for this postcode,count,min of the denominators used by derived fields
+ato_small_denominator,ato,Project review threshold only; derived means on few individuals are unstable; no row deletion,boolean,ato_min_derived_denominator < 100
+ato_nonpositive_taxable_income_total,ato,Review flag; source value retained,boolean,ato_taxable_income_or_loss_total <= 0
+ato_any_feature_missing,ato,Any selected or derived numeric feature unavailable,boolean,Selected numeric fields
+ato_quality_issue,ato,At least one recorded numeric/ratio/count issue,boolean,quality_issues.csv
+ato_matched,ato,Source postcode exists,boolean,
+postcode,union,Four-character postcode join key; not proof of postal validity,string,union of three source keys
+all_sources_matched,derived,Key exists in all three sources; does not imply all fields are complete,boolean,census_matched AND seifa_matched AND ato_matched
