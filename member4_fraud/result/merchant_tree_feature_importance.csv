@@ -1,0 +1,35 @@
+model,feature,importance
+Random Forest,log_total_revenue,0.23659472084114402
+Random Forest,log_sales_90d,0.14292317404172897
+Random Forest,transaction_value_cv,0.14159540670571133
+Random Forest,unique_consumer_mean_risk,0.055839483998231305
+Random Forest,order_count_90d,0.0518930920791607
+Random Forest,avg_transaction_value,0.04878000121664552
+Random Forest,unique_consumers_90d,0.04731517662784653
+Random Forest,unique_consumers,0.04586825515551817
+Random Forest,amount_weighted_consumer_risk,0.03954554162718673
+Random Forest,days_since_last_transaction,0.036919183994585866
+Random Forest,sales_growth_log,0.033199528738345176
+Random Forest,active_days,0.030101849797475665
+Random Forest,repeat_consumer_share,0.023791360400231377
+Random Forest,high_risk_revenue_share,0.02014505077869353
+Random Forest,avg_order_value_90d,0.01869142754305598
+Random Forest,high_value_transaction_ratio_90d,0.013571861236189753
+Random Forest,merchant_take_rate_pct,0.013224885218249329
+XGBoost,log_total_revenue,0.12201917916536331
+XGBoost,unique_consumers_90d,0.1204029843211174
+XGBoost,log_sales_90d,0.10449422895908356
+XGBoost,transaction_value_cv,0.08922263234853745
+XGBoost,order_count_90d,0.08760752528905869
+XGBoost,repeat_consumer_share,0.07513444870710373
+XGBoost,unique_consumers,0.059071134775877
+XGBoost,unique_consumer_mean_risk,0.05669768527150154
+XGBoost,active_days,0.053051404654979706
+XGBoost,avg_transaction_value,0.046397775411605835
+XGBoost,high_value_transaction_ratio_90d,0.038151782006025314
+XGBoost,days_since_last_transaction,0.029188349843025208
+XGBoost,amount_weighted_consumer_risk,0.027889514341950417
+XGBoost,sales_growth_log,0.02649032697081566
+XGBoost,avg_order_value_90d,0.024322258308529854
+XGBoost,high_risk_revenue_share,0.02120688557624817
+XGBoost,merchant_take_rate_pct,0.018651898950338364
