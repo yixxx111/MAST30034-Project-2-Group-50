@@ -16,4 +16,4 @@ Then run the notebook from this folder. Displaying/rerunning the notebook requir
 
 Core results: 14,195,505 unique orders, zero quarantined rows, 100% consumer join coverage and 95.91% merchant row coverage. Unmatched merchants account for 8.59% of recorded transaction value. The global p99 flags 141,956 transactions accounting for 20.94% of value; these are retained, not classified as fraud.
 
-The full local copy includes the unchanged transaction data with restored standard filenames. A separate lightweight submission ZIP omits Parquet files but includes the code, reports and executed notebook. Do not treat that ZIP as the full data archive.
+This GitHub-ready copy includes the code, small CSV/JSON reports, executed notebook and HTML. It omits the full transaction and quarantine Parquet outputs. Obtain row-level data separately when needed; this folder is not a full data archive.

@@ -27,7 +27,9 @@ pytest
 
 The pipeline creates `data/curated/curated_transactions/` as partitioned Parquet, plus
 the audit, quarantine, join-coverage, snapshot-coverage, merchant-exception, and
-`data_quality_profile.csv` files.
+`data_quality_profile.csv` files. This GitHub copy includes the small CSV/JSON reports
+and saved notebook/HTML results. The full transaction Parquet directory and quarantine
+Parquet are generated locally and shared separately; they are not included here.
 
 `data_quality_profile.csv` separates raw invalid/missing records that were quarantined,
 merchant records that became unavailable only after the left join, and future fraud or
