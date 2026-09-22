@@ -19,11 +19,12 @@ def main():
     cells = []
     md = lambda s: cells.append(nbf.v4.new_markdown_cell(s))
     code = lambda s: cells.append(nbf.v4.new_code_cell(s))
-    md('''# ATO 2021–22 邮编数据清洗结果
+    md('''# ATO 2021-22 postcode data cleaning results
 
-本报告从保存的清洗结果实时读取并验证数据，展示处理规则、覆盖率、质量与使用限制。
-每行是一个邮编。地区税务统计不是个人购买力或信用风险。
-此次没有合并全量交易，没有计算商户分数。
+This report reads and verifies the saved cleaning results live, showing the processing rules,
+coverage, quality, and usage limits. Each row is a postcode. Regional tax statistics are not an
+individual's purchasing power or credit risk.
+Full transaction integration and merchant scoring were not done here.
 ''')
     code('''from pathlib import Path
 import json
@@ -45,12 +46,14 @@ display(pd.DataFrame([{'raw_rows':meta['source_data_rows'], 'clean_rows':len(df)
                        'excluded_rows':meta['excluded_rows'], 'quality_issues':meta['quality_issue_cells']}]))
 display(df.head())
 ''')
-    md('''## 1. 清洗及对账
+    md('''## 1. Cleaning and reconciliation
 
-只使用 Table 6B 的全部个人记录；Table 6A 的两个税务状态用于对账，不重复加入。
-规范邮编，隔离州 other 和 Overseas 汇总记录，检查唯一键、数值、比例及分母。
-保留真实零值和负收入；不填补、不缩尾、不删除统计极端值。
-州 other 的具体形成原因不能只凭标签确定。对账键或数值不符时流水线停止。
+Only the full individual records from Table 6B are used; Table 6A's two tax-status sub-groups are
+used to reconcile against them, not added in again. Postcodes are normalised, state "other" and
+Overseas aggregate records are isolated, and unique keys, values, ratios, and denominators are
+checked. Genuine zero values and negative income are kept -- no imputation, winsorising, or removal
+of statistical outliers. The exact cause of a state-"other" record can't be determined from the
+label alone. The pipeline stops if a reconciliation key or value doesn't match.
 ''')
     code('''excluded = pd.read_csv(results / 'excluded_records.csv')
 reconciliation = pd.read_csv(results / 'table6a_reconciliation.csv')
@@ -59,11 +62,13 @@ display(excluded)
 display(reconciliation)
 display(pd.read_csv(results / 'feature_quality_profile.csv'))
 ''')
-    md('''## 2. 消费者邮编覆盖
+    md('''## 2. Consumer postcode coverage
 
-覆盖率以项目提供的合成消费者记录为分母，不是澳大利亚人口覆盖率，也不是交易/交易金额覆盖率。
-联合覆盖仅表示邮编同时存在于三张表，不保证所有 Census/SEIFA 指标都有值。
-州不一致只作审计，不能直接认定消费者填错。号段标签为启发式，不证明未匹配原因。
+Coverage rates use the project's provided synthetic consumer records as the denominator -- this is
+not Australia's population coverage, nor transaction/transaction-amount coverage. Combined coverage
+only means the postcode exists in all three tables; it doesn't guarantee every Census/SEIFA metric
+has a value. A state mismatch is only logged for audit, not treated as proof the consumer's record
+is wrong. The number-range label is a heuristic and doesn't prove the reason for a non-match.
 ''')
     code('''coverage = pd.read_csv(results / 'consumer_join_coverage.csv')
 display(coverage)
@@ -78,11 +83,13 @@ fig.tight_layout()
 fig.savefig(module / 'curation_summary/figures/consumer_coverage.png', dpi=150)
 plt.show()
 ''')
-    md('''## 3. 地区指标与质量标记
+    md('''## 3. Regional metrics and quality flags
 
-应税收入金额除以对应标签人数；工资金额除以工资人数。它们不是中位数。
-工资人数占比不是人口就业率，净税额人数占比不是合规或欺诈指标。
-派生指标分母少于 100 是项目审阅阈值，不是官方抑制规则，也不删除邮编。
+Taxable-income amounts are divided by their corresponding reporter-count label; salary amounts are
+divided by the salary-recipient count. These are means, not medians. Salary-recipient share is not
+an employment rate, and net-tax-payer share is not a compliance or fraud indicator. A derived-metric
+denominator below 100 is this project's own review threshold, not an official suppression rule, and
+no postcode is removed for it.
 ''')
     code('''display(pd.read_csv(results / 'data_dictionary.csv'))
 display(pd.DataFrame({'flag':['small denominator','SA4 state-other placeholder'],
@@ -94,12 +101,14 @@ ax.set_ylabel('Postcodes'); ax.set_title('Area income distribution; extremes ret
 fig.tight_layout(); fig.savefig(module / 'curation_summary/figures/income_distribution.png', dpi=150)
 plt.show()
 ''')
-    md('''## 4. 官方中位数候选表
+    md('''## 4. Official median candidate table
 
-已另外核实 Individuals Table 8，并保留官方 2021–22 年均值和中位数。
-其 Notes 说明该年度只发布申报量超过 200 的邮编；未发布的 `na` 保留缺失。
-官方 Notes 对均值/中位数的统计口径有专门定义。不可从 Table 6B 总额推算中位数，
-也不要默认不同表的平均值完全相同。这里仅保存候选，不替换现有特征。
+Separately verified against Individuals Table 8, keeping the official 2021-22 mean and median.
+Its Notes state that only postcodes with more than 200 returns are published for that year;
+unpublished values are kept as missing `na`. The official Notes define their own statistical basis
+for the mean/median. The median can't be inferred from Table 6B's totals, and the two tables' means
+shouldn't be assumed identical either. This candidate table is only kept here, not merged to replace
+the existing features.
 ''')
     code('''median = pd.read_parquet(module / 'median_reference/ato_table8_candidates.parquet')
 median_meta = json.loads((module / 'median_reference/metadata.json').read_text())
@@ -108,12 +117,15 @@ display(pd.DataFrame([{'postcodes_in_table8':len(median), 'available_2021_22':me
 display(median.head())
 print(median_meta['source_url'])
 ''')
-    md('''## 5. 使用边界及下一步
+    md('''## 5. Usage boundaries and next steps
 
-这是 2021–22 收入年度、截至 2023-10-31 处理申报的版本，不能视为交易发生时已知的预测输入。
-ATO 邮编与 ABS POA 并不完全相同。缺失不得直接填零，地区指标不得解释为个体事实。
-后续按消费者邮编连接，检查行数不变和商户覆盖率，再决定采用均值或官方中位数。
-尚未进行全量交易接入、商户特征构造、欺诈分析或排名。
+This is the 2021-22 income year, as processed up to 2023-10-31 -- it should not be treated as a
+predictive input known at the time a transaction occurred. ATO postcodes are not identical to ABS
+POAs. Missingness must not simply be zero-filled, and regional metrics must not be interpreted as
+facts about an individual. Next, join by consumer postcode, check that row counts and merchant
+coverage are unchanged, then decide whether to use the mean or the official median.
+Full transaction integration, merchant-feature construction, fraud analysis, and ranking have not
+been done yet.
 ''')
     code('''print('Source:', meta['source_url'])
 print('Workbook SHA-256:', meta['source_sha256'])
