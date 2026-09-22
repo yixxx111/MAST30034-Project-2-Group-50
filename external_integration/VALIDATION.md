@@ -1,89 +1,108 @@
-# 外部数据接入验证报告
+# External data integration validation report
 
-验证日期：2026-09-20（正文口径），补充统计更新于本次复核。以下数字基于当前代码与三个来源实际
-清洗结果重新运行得到，并与仓库中 `results/` 的现有输出逐字段比对一致（可复现）。
+Validation date: 2026-09-20 (main text), with supplementary statistics updated in this review. The
+numbers below come from re-running the current code against the three sources' actual cleaned
+outputs, and match the existing `results/` output in the repo field-by-field (reproducible).
 
-## 邮编维度表
+## Postcode dimension table
 
-- 三个来源输入行数：census 2,641、seifa 2,641、ato 2,630（各自邮编唯一，参考年份单一）。
-- outer join 后维度表 2,710 行、141 列（含 3 个来源匹配标记 + 1 个综合匹配标记 + 1 个邮编列）。
-- 邮编在三源中的匹配组合（`postcode_source_patterns.csv`）：
-  - census+seifa+ato 都匹配：2,561 个邮编
-  - 只有 census+seifa（ato 未匹配）：80 个邮编
-  - 只有 ato（census+seifa 未匹配）：69 个邮编
-  - 2,561 + 80 + 69 = 2,710，无遗漏也无重复。
+- Input row counts from the three sources: census 2,641, seifa 2,641, ato 2,630 (each with a unique
+  postcode and a single reference year).
+- After the outer join, the dimension table has 2,710 rows, 141 columns (including 3 source match
+  flags + 1 combined match flag + 1 postcode column).
+- Which sources each postcode matched (`postcode_source_patterns.csv`):
+  - Matched in all of census+seifa+ato: 2,561 postcodes
+  - Only census+seifa (ato unmatched): 80 postcodes
+  - Only ato (census+seifa unmatched): 69 postcodes
+  - 2,561 + 80 + 69 = 2,710, no gaps and no duplicates.
 
-## 消费者层接入
+## Consumer-layer join
 
-- 输入 499,999 条消费者，接入后仍为 499,999 条（LEFT JOIN 不丢行，行数/唯一 ID 数校验通过）。
-- 匹配率（`consumer_coverage.csv`）：
-  - census_matched / seifa_matched：83.36%（416,818 / 499,999）
-  - ato_matched：82.97%（414,825 / 499,999），与 `external_ato/VALIDATION.md` 中的数字一致
-  - all_sources_matched：80.84%（404,185 / 499,999），与 ATO 报告中"联合邮编覆盖 80.84%"一致
-- 逐字段缺失率（`consumer_feature_missingness.csv`）：141 个字段中 136 个存在缺失。
+- Input: 499,999 consumers; still 499,999 after the join (LEFT JOIN doesn't drop rows; row-count/
+  unique-ID checks passed).
+- Match rate (`consumer_coverage.csv`):
+  - census_matched / seifa_matched: 83.36% (416,818 / 499,999)
+  - ato_matched: 82.97% (414,825 / 499,999), matching the number in `external_ato/VALIDATION.md`
+  - all_sources_matched: 80.84% (404,185 / 499,999), matching the "combined postcode coverage
+    80.84%" in the ATO report
+- Per-field missingness (`consumer_feature_missingness.csv`): of 141 fields, 136 have some
+  missingness.
 
-  **（本次复核修正）** 之前这里写"缺失比例与各来源的匹配率互补"，把所有缺失都归因于"邮编未匹配"，
-  这不准确。`consumer_feature_missingness.csv` 本身就同时记录了 `missing_rows`（该字段总缺失行数）
-  和 `matched_but_missing_rows`（**邮编已经匹配上、但该字段本身仍是空值**的行数）两栏，两者是不同
-  的原因：
-  - `missing_rows - matched_but_missing_rows` 部分，是邮编本身没有匹配到对应来源，缺失确实与匹配率
-    互补，这部分推论成立。
-  - `matched_but_missing_rows` 部分，是源数据自身在该字段上有缺失（例如某些 ABS/SEIFA 派生指标在
-    小样本邮编上被抑制或未定义），跟"是否匹配"无关，即使邮编匹配上了，字段仍可能是空的。
+  **(Corrected in this review)** This previously said "the missingness rate is the complement of
+  each source's match rate", attributing all missingness to "postcode not matched" -- that isn't
+  accurate. `consumer_feature_missingness.csv` itself already records two separate columns:
+  `missing_rows` (total rows missing for that field) and `matched_but_missing_rows` (**rows where
+  the postcode DID match, but the field itself is still null**), and these are two different causes:
+  - The `missing_rows - matched_but_missing_rows` portion is where the postcode itself didn't match
+    its source, so missingness genuinely is the complement of the match rate -- that part of the
+    reasoning holds.
+  - The `matched_but_missing_rows` portion is where the source data itself has missingness on that
+    field (e.g. some ABS/SEIFA derived metrics are suppressed or undefined for small-sample
+    postcodes), unrelated to whether the postcode matched -- even a matched postcode can still have
+    a null field.
 
-  实测：136 个有缺失的字段里，**64 个字段存在 `matched_but_missing_rows > 0`**，也就是"匹配后来源
-  字段/派生值本身缺失"，例如：
+  Checked directly: of the 136 fields with missingness, **64 fields have `matched_but_missing_rows`
+  > 0**, i.e. "the source field/derived value itself is missing after matching", for example:
 
-  | 字段 | 已匹配但字段仍缺失的消费者数 |
+  | Field | Consumers matched but field still missing |
   |---|---:|
   | `census_avg_household_size` | 618 |
   | `seifa_irsd_national_decile` | 2,693 |
   | `seifa_irsd_state_decile` | 5,555 |
 
-  这不一定是清洗环节的错误（源数据本身可能就有这些空值），但说明"缺失比例与匹配率互补"这个笼统
-  说法不准确，需要分开看待。**不对这些值做补零或插补**——保持真实缺失是正确做法，只是文字描述要
-  准确区分两种缺失原因。
-- 未完全匹配邮编清单（`consumer_postcode_exceptions.csv`）：例如邮编 `0200`（三源均未匹配，145 条消费者
-  记录）、`0801`/`0804`/`0811`（只匹配 ato，census/seifa 未覆盖）等，均有据可查。
+  This isn't necessarily a cleaning-step error (the source data itself may genuinely have these
+  nulls), but it means the blanket statement "missingness is the complement of the match rate" isn't
+  accurate and the two causes need to be distinguished. **These values are not zero-filled or
+  imputed** -- keeping the genuine missingness is the right call; only the written description needed
+  to distinguish the two causes accurately.
+- List of postcodes that didn't fully match (`consumer_postcode_exceptions.csv`): e.g. postcode
+  `0200` (unmatched in all three sources, 145 consumer records), `0801`/`0804`/`0811` (matched only
+  ato, not covered by census/seifa), etc., all traceable.
 
-## 交易层接入
+## Transaction-layer join
 
-`curated_transactions` 通过重新运行 member2 已提交到 GitHub 的清洗代码（`member2_curation/src/`），
-对着 Canvas 发布的原始交易快照数据（`project-2-bnpl-tables-part2/3/4.zip`）本地跑出来，具体见
-`member2_curation` 目录下的复现记录；跑出来的 `curation_metadata.json` 数字（input_rows 14,195,505、
-quarantined_rows 0、unmatched_merchant_rows 580,830、amount_p99 1619.2727559488073）与 member2 原始
-运行结果逐位一致。
+`curated_transactions` was produced locally by re-running member2's cleaning code already committed
+to GitHub (`member2_curation/src/`) against the raw transaction snapshot data released on Canvas
+(`project-2-bnpl-tables-part2/3/4.zip`) -- see the reproduction notes under `member2_curation` for
+details; the resulting `curation_metadata.json` numbers (input_rows 14,195,505, quarantined_rows 0,
+unmatched_merchant_rows 580,830, amount_p99 1619.2727559488073) match member2's original run
+exactly.
 
-在此基础上做交易层外部数据接入：
+The transaction-layer external-data join was built on top of that:
 
-- 输入 14,195,505 条交易，接入后仍为 14,195,505 条（行数、唯一 order_id 数、原始列内容（哈希校验）、
-  金额总和四项校验全部通过，连接前后完全一致）。
-- 匹配率与金额覆盖率（`transaction_coverage.csv`）：
-  | 指标 | 按笔数 | 按金额 |
+- Input: 14,195,505 transactions; still 14,195,505 after the join (all four checks -- row count,
+  unique order_id count, original-column content via hash check, and amount total -- passed,
+  completely unchanged before/after the join).
+- Match rate and amount coverage (`transaction_coverage.csv`):
+  | Metric | By row count | By amount |
   |---|---|---|
-  | census_matched / seifa_matched | 83.51%（11,855,228 / 14,195,505） | 83.52% |
-  | ato_matched | 82.84%（11,760,045 / 14,195,505） | 82.84% |
-  | all_sources_matched | 80.77%（11,466,314 / 14,195,505） | 80.77% |
+  | census_matched / seifa_matched | 83.51% (11,855,228 / 14,195,505) | 83.52% |
+  | ato_matched | 82.84% (11,760,045 / 14,195,505) | 82.84% |
+  | all_sources_matched | 80.77% (11,466,314 / 14,195,505) | 80.77% |
 
-  **（本次复核修正）** 之前的版本在这里写"按笔数和按金额的覆盖率几乎相等，说明未匹配的交易在
-  金额分布上没有系统性偏差"——这个推论不成立：两个覆盖率接近，最多说明匹配组和未匹配组的
-  **平均**交易金额接近，不能证明金额分布、州分布或行业分布没有系统性偏差。改为下面这句，并补充
-  实测数据：
+  **(Corrected in this review)** The previous version said here "the row-count coverage and the
+  amount coverage are almost equal, showing the unmatched transactions have no systematic bias in
+  amount distribution" -- that inference doesn't hold: the two coverage rates being close, at most,
+  shows the matched and unmatched groups have similar **average** transaction amounts; it doesn't
+  prove there's no systematic difference in amount distribution, state distribution, or industry
+  distribution. Replaced with the statement below, with actual measurements added:
 
-  > 整体金额覆盖率与笔数覆盖率接近，但这本身不能排除分组内部（按州、按商户行业等）的覆盖率差异，
-  > 需要单独查看分组统计。
+  > The overall amount coverage is close to the row-count coverage, but this alone doesn't rule out
+  > coverage differences within subgroups (by state, by merchant industry, etc.) -- those need to be
+  > checked separately.
 
-  实测补充（本次复核新增，未匹配 vs 匹配两组）：
+  Additional measurements (new in this review, unmatched vs. matched groups):
 
-  | 分组 | n | p25 | p50（中位数） | p75 | p99 | 均值 |
+  | Group | n | p25 | p50 (median) | p75 | p99 | mean |
   |---|---:|---:|---:|---:|---:|---:|
-  | 未匹配（all_sources_matched=false） | 2,729,191 | 26.17 | 62.20 | 150.43 | 1614.79 | 166.28 |
-  | 已匹配（all_sources_matched=true） | 11,466,314 | 26.12 | 62.24 | 150.46 | 1620.51 | 166.22 |
+  | Unmatched (all_sources_matched=false) | 2,729,191 | 26.17 | 62.20 | 150.43 | 1614.79 | 166.28 |
+  | Matched (all_sources_matched=true) | 11,466,314 | 26.12 | 62.24 | 150.46 | 1620.51 | 166.22 |
 
-  按金额分布看，匹配组和未匹配组确实非常接近（分位数逐档只差几分钱到几元），**这一条具体结论是
-  站得住的**。但按州拆开看，覆盖率差异很大，不是均匀的：
+  By amount distribution, the matched and unmatched groups really are very close (each percentile
+  differs by only cents to a few dollars) -- **this specific conclusion holds up**. But split by
+  state, the coverage differs a lot and is not uniform:
 
-  | 州 | 交易数 | all_sources_matched 覆盖率 |
+  | State | Transactions | all_sources_matched coverage |
   |---|---:|---:|
   | SA | 1,612,955 | 94.1% |
   | QLD | 2,100,381 | 92.6% |
@@ -94,66 +113,92 @@ quarantined_rows 0、unmatched_merchant_rows 580,830、amount_p99 1619.272755948
   | WA | 2,247,663 | 68.3% |
   | NSW | 4,095,233 | 67.2% |
 
-  NSW、WA、NT 三州的外部数据覆盖率明显低于 VIC/QLD/SA/TAS（相差 20+ 个百分点），这是因为这几州有
-  更高比例的邮编没有同时出现在 census/seifa/ato 三个源里，不是随机缺失。**任何按州或按商户所在州
-  切片的下游分析（含第 4 步行业增长图、后续排名模型）都应该知道这一点**：外部特征对 NSW/WA/NT 商户
-  客群的覆盖天然更差，不能把"该商户没有地区特征"和"该商户地区特征不重要"混为一谈。行业维度的覆盖率
-  拆分见 `member3_merchant_features/VALIDATION.md`（现在按 census/seifa/ato 三个来源分别报告覆盖率）。
+  NSW, WA and NT have noticeably lower external-data coverage than VIC/QLD/SA/TAS (a 20+ percentage
+  point gap), because these states have a higher proportion of postcodes that don't appear in all
+  three of census/seifa/ato -- this isn't random missingness. **Any downstream analysis that slices
+  by state or by a merchant's own state (including the step-4 industry-growth chart and later
+  ranking models) should be aware of this**: external-feature coverage is inherently worse for
+  NSW/WA/NT merchant customer bases, and "this merchant has no regional features" should not be
+  conflated with "this merchant's regional features don't matter". The industry-level coverage
+  breakdown is in `member3_merchant_features/VALIDATION.md` (which now reports coverage separately
+  for the census/seifa/ato sources).
 
-- 交易层用的是精简维度表（邮编 + 4 个匹配标记位），不含 141 个具体外部特征值：把 141 列贴到 1400 万行
-  上计算和存储成本都很高，而且这一步真正要的是匹配率和行数一致性，不是每笔交易自己的地区特征。
+- The transaction layer uses the reduced dimension table (postcode + 4 match flags), without the
+  141 individual external feature values: attaching 141 columns to 14M rows would be expensive in
+  both compute and storage, and what this step actually needs is the match rate and row-count
+  consistency, not each transaction's own regional features.
 
-  **（本次复核修正措辞）** 之前这里写"具体特征值留到商户级聚合之后再关联"，这个说法把顺序说反了。
-  实际做法（`member3_merchant_features/build_merchant_features.py`）是：**先在交易层按 consumer_postcode
-  关联外部特征**（这样才能算出交易层面的匹配标记和覆盖率），**再按 merchant_abn 把已关联特征值的
-  交易聚合成商户级别的交易量加权平均**——不是先把交易聚合成商户、再拿商户去关联邮编。本模块（
-  `external_integration`）只做交易层"先关联、只留标记位"这一步验证匹配率和行数一致性；具体的
-  141 个特征值要等到聚合到商户级别（几千行，而不是一千四百万行）时才真正贴上去，那一步也仍然是
-  "交易先关联、再聚合"的顺序，只是把关联和聚合合并在同一次查询里做了。
-- 未完全匹配邮编清单：`transaction_postcode_exceptions.csv`。
-- `transaction_feature_missingness.csv` 为空：因为精简维度表里除了 4 个匹配标记位（`_matched` 结尾，
-  按定义不计入逐字段缺失率统计）之外没有别的字段可统计缺失，这是设计上的预期结果，不是遗漏。
+  **(Wording corrected in this review)** This previously said "the specific feature values are
+  joined later, after merchant-level aggregation" -- that got the order backwards. What actually
+  happens (`member3_merchant_features/build_merchant_features.py`) is: **external features are
+  joined at the transaction layer first, by `consumer_postcode`** (this is what makes it possible to
+  compute the transaction-layer match flags and coverage), **and only then are the transactions --
+  which already carry the joined feature values -- aggregated by `merchant_abn` into a
+  transaction-weighted average at merchant level** -- not "aggregate transactions to merchants
+  first, then join postcodes onto merchants". This module (`external_integration`) only validates
+  the match rate and row-count consistency for the transaction layer's "join first, keep only the
+  flags" step; the actual 141 feature values are only genuinely attached once aggregated to merchant
+  level (a few thousand rows, not 14 million) -- that step still follows the "join transactions
+  first, then aggregate" order, it just does the join and the aggregation in the same query.
+- List of postcodes that didn't fully match: `transaction_postcode_exceptions.csv`.
+- `transaction_feature_missingness.csv` is empty: because the reduced dimension table has no field
+  to report missingness for besides the 4 match flags (which end in `_matched` and are excluded from
+  per-field missingness by definition) -- this is the expected result by design, not an omission.
 
-## 数据完整性校验（脚本内置，非事后抽查）
+## Data-integrity checks (built into the script, not an after-the-fact spot check)
 
-- 连接前后原始列的内容一致性校验：对消费者层（约50万行）用逐格双向比对（EXCEPT ALL）；对交易层
-  （约1400万行）改用对全部原始列做聚合哈希比对（`sum(hash(...))`），两者验证的是同一件事——连接
-  没有改动原始数据——但哈希校验在千万级数据量上开销小得多，避免了一次性对 14M 行做集合级双向比对
-  导致的内存不足。
-- 连接前后行数、唯一 ID 数完全一致，确认是 LEFT JOIN 而不是意外的多对多展开。
-- 交易层额外校验金额总和连接前后一致（consumer 层无金额字段，此项不适用）。
-- 任一校验失败会直接抛错终止运行，而不是只记录警告。
+- Consistency check of the original columns' content before/after the join: for the consumer layer
+  (~500k rows), a cell-by-cell two-way comparison (EXCEPT ALL); for the transaction layer (~14M
+  rows), an aggregated hash comparison over all original columns instead (`sum(hash(...))`) -- both
+  verify the same thing (the join didn't change the original data), but the hash check is far
+  cheaper at tens-of-millions-of-rows scale, avoiding the out-of-memory risk of a set-level two-way
+  comparison over 14M rows at once.
+- Row count and unique-ID count are completely unchanged before/after the join, confirming it's a
+  LEFT JOIN and not an accidental many-to-many expansion.
+- The transaction layer additionally checks the amount total is unchanged before/after the join
+  (the consumer layer has no amount field, so this doesn't apply there).
+- Any failed check raises an error and stops the run immediately, rather than just logging a
+  warning.
 
-## 复核（第二轮）：两张诊断表之前没有生成代码
+## Review (round 2): two diagnostic tables previously had no generating code
 
-**发现：** `transaction_coverage_by_state.csv` 和 `transaction_amount_by_match_status.csv`
-（`member3_summary.ipynb` 会读取）之前是用一次性的 device_bash 脚本跑出来的，数字经组员独立
-核算是对的，但仓库里的 `integrate.py` 和 Notebook 代码里只有读取这两张表的地方，没有生成它们
-的代码——组员从原始数据重跑整条流水线时生成不出来。
+**Finding:** `transaction_coverage_by_state.csv` and `transaction_amount_by_match_status.csv`
+(which `member3_summary.ipynb` reads) were previously produced by a one-off device_bash script;
+the numbers were independently verified as correct by a teammate, but the repo's `integrate.py` and
+notebook code only read these two tables -- there was no code to generate them, so a teammate
+re-running the whole pipeline from raw data couldn't reproduce them.
 
-**修改：** 把生成逻辑做成 `integrate.py` 里的一个正式函数 `write_transaction_diagnostics(con,
-out, joined_view='joined')`，在 `run()` 里紧跟着交易层的 `enrich()` 调用被执行，直接复用
-`enrich()` 留下的 `joined` 临时视图（已经有 `consumer_state`、`dollar_value`、
-`all_sources_matched`），不再是脱离流水线的一次性查询。重新跑一遍完整流水线
-（`python integrate.py --consumers ../tables/tbl_consumer.csv --transactions
-../member2_curation/data/curated/curated_transactions`），生成的两张表数值与复核之前完全一致
-（按州覆盖率、按匹配状态的金额分位数逐位相同），证明这只是把生成过程接回了流水线，没有改变
-任何数字。
+**Fix:** turned the generation logic into a proper function in `integrate.py`,
+`write_transaction_diagnostics(con, out, joined_view='joined')`, called right after the
+transaction-layer `enrich()` call inside `run()`, directly reusing the `joined` temp view that
+`enrich()` leaves behind (which already has `consumer_state`, `dollar_value`,
+`all_sources_matched`) -- no longer a one-off query outside the pipeline. Re-running the full
+pipeline (`python integrate.py --consumers ../tables/tbl_consumer.csv --transactions
+../member2_curation/data/curated/curated_transactions`) produced the same two tables with values
+identical to before this review (state coverage and amount percentiles by match status match
+exactly), confirming this only wired the generation back into the pipeline without changing any
+numbers.
 
-## 自动化测试
+## Automated tests
 
-运行：`python -m unittest discover -s external_integration/tests -v`
-实际结果：7 项通过，无跳过（新增 2 项，覆盖 `write_transaction_diagnostics`：有
-`consumer_state` 时按州覆盖率和按匹配状态金额分布都写出且数值正确；没有 `consumer_state`
-时（例如只做了消费者层接入）安全跳过、不写出文件）。
-覆盖范围：三源 outer join 与字段前缀、重复/多年份/空邮编被拒绝、交易层连接的行数/金额/缺失率统计、
-分区 parquet 输入读取、重复 order_id 被拒绝、两张诊断表的生成与跳过逻辑。
+Run: `python -m unittest discover -s external_integration/tests -v`
+Actual result: 7 passed, none skipped (2 new, covering `write_transaction_diagnostics`: with
+`consumer_state` present, both the by-state coverage and the by-match-status amount distribution are
+written with correct values; without `consumer_state` (e.g. only the consumer-layer join was run),
+it safely skips and writes no file).
+Coverage: the three-source outer join and field prefixing, rejection of duplicate/multi-year/null
+postcodes, transaction-layer join row-count/amount/missingness statistics, reading partitioned
+parquet input, rejection of duplicate order_id, and the generation/skip logic for the two diagnostic
+tables.
 
-## 使用范围
+## Scope of use
 
-- 三个来源年份不同（Census/SEIFA 2021、ATO 2021-22），合并后仅作回顾性地区背景特征，不代表同一时点采集。
-- `all_sources_matched` 只说明邮编键同时存在于三个来源，不代表该邮编下所有字段都完整（仍需看
-  `consumer_feature_missingness.csv`）。
-- **外部数据覆盖率按州分布不均**（NSW/WA/NT 明显低于其他州，见上表），使用者不应假设覆盖缺失是
-  随机的。
-- 本模块不做商户级特征构造、欺诈分析或商户评分，这些不属于接入阶段范围。
+- The three sources have different reference years (Census/SEIFA 2021, ATO 2021-22); once merged
+  they serve only as retrospective regional background features, not as collected at the same point
+  in time.
+- `all_sources_matched` only means the postcode key exists in all three sources -- it doesn't mean
+  every field is complete for that postcode (still check `consumer_feature_missingness.csv`).
+- **External-data coverage is not evenly distributed by state** (NSW/WA/NT noticeably lower than
+  other states, see table above); users should not assume the coverage gaps are random.
+- This module does not do merchant-level feature construction, fraud analysis, or merchant scoring;
+  those are out of scope for the integration stage.

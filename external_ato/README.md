@@ -1,20 +1,22 @@
-# ATO 2021–22 邮编数据清洗
+# ATO 2021-22 postcode data cleaning
 
-将官方 Table 6B 整理为每个邮编一行的地区税务特征。保留 Claude 修改后的 21 列指标结构，补齐 Parquet、验证报告和可执行 summary。
-这是回顾性地区背景分析；不执行商户评分或欺诈分析。
+Turns the official Table 6B into one row per postcode of regional tax features. Keeps the 21-column
+metric structure after Claude's revisions, plus a Parquet copy, a validation report, and a runnable
+summary. This is retrospective regional-background analysis; it does not perform merchant scoring or
+fraud analysis.
 
-## 先看这些文件
+## Start here
 
-- `VALIDATION.md`：实际运行的质量结果及限制。
-- `curation_summary/ato_summary.ipynb`：已执行的分析说明、检查和图表。
-- `curation_summary/ato_summary.html`：可直接用浏览器阅读。
-- `results/ato_clean.parquet`：推荐作为后续连接输入，邮编已保存为文本。
-- `results/ato_clean.csv`、`results/data_dictionary.csv`：文本版数据及每列含义。
-- `median_reference/`：独立保存的官方 Table 8 中位数/均值候选，未替换核心特征。
+- `VALIDATION.md`: the actual run's quality results and limitations.
+- `curation_summary/ato_summary.ipynb`: the executed analysis write-up, checks, and charts.
+- `curation_summary/ato_summary.html`: readable directly in a browser.
+- `results/ato_clean.parquet`: recommended as the input for downstream joins; postcode is stored as text.
+- `results/ato_clean.csv`, `results/data_dictionary.csv`: the text version of the data and what each column means.
+- `median_reference/`: the official Table 8 median/mean candidates, kept separately and not used to replace the core features.
 
-## VS Code 运行
+## Running in VS Code
 
-从小组仓库根目录运行；不要在外层 project2 目录直接运行相对命令。
+Run from the group repo root; do not run relative commands directly from the outer `project2` directory.
 
 ```bash
 source external_ato/.venv/bin/activate
@@ -26,32 +28,49 @@ python -m unittest discover -s external_ato/tests -v
 python external_ato/build_summary.py
 ```
 
-清洗输出必须使用空目录；上面重跑写到新目录。summary 默认读取 `external_ato/results/`，不会自动替换为重跑结果。
-首次使用可先 `python3 -m venv external_ato/.venv`。包依赖包含 notebook 和 Parquet 支持。
-不传 --consumers 时只清洗 ATO；--compare 需要同时提供消费者输入。
+The cleaning output must use an empty directory; the re-run above writes to a new one. The summary
+reads from `external_ato/results/` by default and does not automatically switch to a re-run's output.
+For a first run, create the venv first with `python3 -m venv external_ato/.venv`. Package dependencies
+include notebook and Parquet support. Without `--consumers`, only ATO is cleaned; `--compare` requires
+a consumer input to be supplied too.
 
 ```python
 import pandas as pd
 ato = pd.read_parquet("external_ato/results/ato_clean.parquet")
-# 如必须读 CSV，只固定邮编类型：
+# If you must read the CSV, only fix the postcode dtype:
 ato_csv = pd.read_csv("external_ato/results/ato_clean.csv", dtype={"postcode": "string"})
 ```
 
-## 清洗规则
+## Cleaning rules
 
-1. 只使用 Table 6B，不叠加 6A 子组；6A 用来逐字段对账，差异超过金额容差 2 AUD（计数容差 0）或键缺失时停止输出。
-2. 核对表头及年份，邮编转四位文本，低于 0200 作为项目有效范围检查。州 other/海外聚合记录独立审计；未知标签、州错误和重复邮编报错。
-3. 数值缺失/非法计数保留 null 并记录；未知文本符号报错待核查。保留真实零值和负收入，不填补、不缩尾、不删除统计极端值。
-4. 应税收入和工资派生均值各自采用对应标签人数。工资人数占比不是人口就业率，净税额人数占比不是风险指标。
-5. 分母低于 100 只作项目审阅标记；SA4 州 other 只作来源占位标记，不从中断定地理缺失原因。
-6. 保留现行版本对 total income 的字段选择，不将高度相关的收入指标当作独立证据；本清洗模块不决定最终特征权重。
-7. 消费者覆盖同时报告州差异和三个来源的联合键覆盖；号段分类仅是启发式，不能证明未匹配原因。
+1. Only Table 6B is used, not stacked with the 6A sub-groups; 6A is used to reconcile field-by-field,
+   and the run stops if a discrepancy exceeds the amount tolerance of 2 AUD (0 for counts) or a key is
+   missing.
+2. Headers and year are checked, postcode is converted to 4-digit text, and below 0200 is checked
+   against the project's valid range. State "other"/overseas aggregate records are audited separately;
+   unknown labels, wrong states, and duplicate postcodes raise an error.
+3. Missing/invalid counts are kept as null and logged; unknown text symbols raise an error for review.
+   Genuine zero values and negative income are kept as-is -- no imputation, winsorising, or removal of
+   statistical outliers.
+4. Taxable-income and salary derived means each use their own corresponding reporter-count label.
+   Salary-recipient share is not an employment rate, and net-tax-payer share is not a risk indicator.
+5. A denominator below 100 is only flagged for project review; SA4 state "other" is only a
+   source-placeholder flag and is not used to conclude a reason for missing geography.
+6. The current version's choice of `total income` field is kept as-is; a highly correlated income
+   metric is not treated as independent evidence. This cleaning module does not decide final feature
+   weights.
+7. Consumer coverage reports both the state breakdown and the combined-key coverage across all three
+   sources; the phone-number-range-style classification is only a heuristic and doesn't prove a reason
+   for non-matches.
 
-## 官方中位数
+## Official median
 
-已确认 Table 8 存在，2021–22 候选统计有 2,270 个可用邮编；表内另 47 行该年 na 保留为 null。
-原表说明该年度只发布超过 200 份申报的邮编。Table 8 的官方平均值也单独保留，不假定等于 Table 6B 派生值。
-选择中位数还是均值留到商户特征阶段；可以比较覆盖，但不能插补不存在的官方中位数。
+Confirmed that Table 8 exists, with 2,270 usable postcodes for the 2021-22 candidate statistics; a
+further 47 rows in the table are n/a for that year and are kept as null. The original table notes that
+only postcodes with more than 200 returns are published for that year. Table 8's official mean is also
+kept separately, without assuming it equals the value derived from Table 6B. Whether to use median or
+mean is left to the merchant-features stage; coverage can be compared, but a non-existent official
+median cannot be imputed.
 
 ```bash
 python external_ato/inspect_median.py \
@@ -59,13 +78,18 @@ python external_ato/inspect_median.py \
   --output external_ato/median_reference_rerun
 ```
 
-## 来源和时间边界
+## Source and time boundaries
 
-Australian Taxation Office, Taxation statistics 2021–22. CC BY 2.5 Australia（目录许可证）。清洗和派生计算为项目工作。
-原始 Excel 保留在 `tables/external/ato_2021_22/`，不修改原件；两份来源元数据和哈希保存在模块中。
-- Table 6 目录：https://data.gov.au/data/dataset/taxation-statistics-postcode-data
-- Table 8：https://data.gov.au/data/dataset/4be150cc-8f84-46b8-8c61-55ff1d48a700/resource/9bd9d5af-2c09-405f-b484-69c862f4dc2e
+Australian Taxation Office, Taxation statistics 2021-22. CC BY 2.5 Australia (catalogue licence).
+Cleaning and derived calculations are this project's own work. The original Excel files are kept in
+`tables/external/ato_2021_22/` and are not modified; source metadata and hashes for both sources are
+kept in this module.
+- Table 6 catalogue: https://data.gov.au/data/dataset/taxation-statistics-postcode-data
+- Table 8: https://data.gov.au/data/dataset/4be150cc-8f84-46b8-8c61-55ff1d48a700/resource/9bd9d5af-2c09-405f-b484-69c862f4dc2e
 
-2021–22 是收入年度，不是可获得日期。该版本使用截至 2023-10-31 处理的申报，不能当作交易发生时已知的预测特征。
-ATO 邮编与 ABS POA 并非完全相同；ATO 年度个人收入与 Census 家庭周收入也非同一口径。
-原始 Excel 通常被项目 tables 忽略规则排除；分享时需同时提供来源链接或原件。
+2021-22 is the income year, not an availability date. This version uses returns as processed up to
+2023-10-31, and it should not be treated as a predictive feature known at the time a transaction
+occurred. ATO postcodes are not identical to ABS POAs; ATO's annual individual income and Census's
+weekly household income are also not on the same basis.
+The original Excel files are usually excluded by the project's `tables` ignore rules; sharing them
+requires also providing the source link or the original file.

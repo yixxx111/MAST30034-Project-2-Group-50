@@ -2,10 +2,10 @@
 
 One row per merchant_abn, covering:
   - transaction scale / recency (total_transactions, total_revenue, active_months, date range)
-  - average order value (avg_transaction_value, 客单价)
-  - repeat custom (repeat_consumer_share, 复购)
-  - revenue trend (normalized_monthly_revenue_trend, 增长) and stability (monthly_revenue_cv,
-    稳定性), computed over a fixed full-calendar-month window with missing months zero-filled
+  - average order value (avg_transaction_value)
+  - repeat custom (repeat_consumer_share)
+  - revenue trend (normalized_monthly_revenue_trend) and stability (monthly_revenue_cv),
+    computed over a fixed full-calendar-month window with missing months zero-filled
   - customer-base regional/socio-economic profile (transaction-weighted averages of a curated,
     non-redundant subset of census/seifa/ato postcode-level features, plus per-source coverage)
   - merchant category / pricing level / take rate (parsed from tbl_merchants.tags)
@@ -560,18 +560,18 @@ def _run_pipeline(out, local):
         "merchant_pricing_level": ("Pricing/risk tier parsed from tbl_merchants.tags, A (lowest) to E (highest)", "category A-E"),
         "merchant_take_rate_pct": ("BNPL take rate parsed from tbl_merchants.tags", "percent"),
         "has_merchant_master_record": ("False for merchant_abn seen in transactions but absent from tbl_merchants (396 of 4,422); category/pricing/take rate are null in that case. Kept for audit; whether these should be eligible for the final recommendation list is a separate policy decision", "boolean"),
-        "total_transactions": ("Count of curated transactions for this merchant, all time (交易规模)", "count"),
-        "total_revenue": ("Sum of dollar_value across this merchant's curated transactions, all time (交易规模)", "AUD"),
-        "avg_transaction_value": ("total_revenue / total_transactions, all time (客单价)", "AUD"),
+        "total_transactions": ("Count of curated transactions for this merchant, all time", "count"),
+        "total_revenue": ("Sum of dollar_value across this merchant's curated transactions, all time", "AUD"),
+        "avg_transaction_value": ("total_revenue / total_transactions, all time", "AUD"),
         "unique_consumers": ("Distinct consumer_id count for this merchant, all time", "count"),
-        "repeat_consumer_share": ("Share of this merchant's consumers with more than one transaction, all time (复购)", "proportion 0-1"),
+        "repeat_consumer_share": ("Share of this merchant's consumers with more than one transaction, all time", "proportion 0-1"),
         "first_order_date": ("Earliest curated transaction date for this merchant", "date"),
         "last_order_date": ("Latest curated transaction date for this merchant", "date"),
         "active_months_all_time": ("Distinct (order_year, order_month) buckets with >=1 transaction, all time including the two partial calendar months (2021-02, 2022-10); NOT the basis for the trend/CV below", "count"),
         "potential_months_in_window": (f"Number of calendar months between this merchant's first and last transaction, clipped to the full-month window {WINDOW_START}..{WINDOW_END}; the denominator for the trend/CV estimate below", "count"),
         "active_months_in_window": ("Of potential_months_in_window, how many actually had a transaction (the rest are zero-filled, not missing)", "count"),
-        "normalized_monthly_revenue_trend": ("Linear trend slope of monthly revenue vs. month, divided by mean monthly revenue (regr_slope/regr_avgy), over the zero-filled full-month window; positive = growing. This is a normalised slope, NOT a month-over-month or year-over-year growth rate -- do not read it as a percentage change (增长)", "proportion of mean revenue, per month"),
-        "monthly_revenue_cv": ("Coefficient of variation (stddev/mean) of monthly revenue over the same zero-filled window; higher = less stable (稳定性)", "ratio"),
+        "normalized_monthly_revenue_trend": ("Linear trend slope of monthly revenue vs. month, divided by mean monthly revenue (regr_slope/regr_avgy), over the zero-filled full-month window; positive = growing. This is a normalised slope, NOT a month-over-month or year-over-year growth rate -- do not read it as a percentage change", "proportion of mean revenue, per month"),
+        "monthly_revenue_cv": ("Coefficient of variation (stddev/mean) of monthly revenue over the same zero-filled window; higher = less stable", "ratio"),
         "low_sample_short_window": (f"True when potential_months_in_window < {MIN_MONTHS_FOR_GROWTH} (including merchants with no activity inside the window at all). Team-chosen threshold; see low_sample_threshold_comparison.csv for how alternates change the count", "boolean"),
         "transactions_in_window": (f"Count of this merchant's transactions falling inside the fixed growth window ({WINDOW_START[0]}-{WINDOW_START[1]:02d}..{WINDOW_END[0]}-{WINDOW_END[1]:02d}) -- NOT the same as total_transactions (all-time). This is the basis for low_sample_few_transactions, since the growth/CV estimate only ever looks at the window: a review found 18 merchants with 10-12 transactions all-time but only 8-9 inside the window, which total_transactions alone would not have caught", "count"),
         "low_sample_few_transactions": (f"True when transactions_in_window < {MIN_TRANSACTIONS_FOR_GROWTH} (NOT total_transactions all-time -- see transactions_in_window). Catches merchants whose first/last transaction span many months but who actually have very few transactions inside the growth window -- a case low_sample_short_window alone misses. Team-chosen threshold", "boolean"),

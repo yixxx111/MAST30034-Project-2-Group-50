@@ -7788,7 +7788,7 @@ python<span class="w"> </span>curation_summary/build_analysis.py<span class="w">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="2.-Are-the-internal-joins-safe?">2. Are the internal joins safe?<a class="anchor-link" href="#2.-Are-the-internal-joins-safe?">¶</a></h2><p>User and consumer joins are required to preserve the transaction row count. The merchant join is deliberately a left join: missing merchant-master records are retained for follow-up rather than removed from merchant-performance analysis.</p>
+<h2 id="2.-Are-the-internal-joins-safe?">2. Are the internal joins safe?<a class="anchor-link" href="#2.-Are-the-internal-joins-safe?">¶</a></h2><p>User and consumer joins are required to preserve the transaction row count. The merchant join is deliberately a left join: missing merchant-master records are retained for follow-up rather than removed from merchant-performance analysis. The 580,830 unmatched merchant transactions are retained because a missing merchant-master match does not establish that the underlying transaction is invalid. Dropping them would discard recorded activity and could bias transaction-level summaries; <code>merchant_master_matched = false</code> identifies these rows for downstream review.</p>
 </div>
 </div>
 </div>
@@ -8064,7 +8064,7 @@ Transactions retained with an unmatched merchant: 580,830
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="4.-Amount-distribution-and-outlier-treatment">4. Amount distribution and outlier treatment<a class="anchor-link" href="#4.-Amount-distribution-and-outlier-treatment">¶</a></h2><p>The global 99th percentile is a review threshold, not a fraud label. Amounts above it remain in the output. No trimming, winsorisation or imputation was applied, so no deletion-based before/after comparison is appropriate.</p>
+<h2 id="4.-Amount-distribution-and-outlier-treatment">4. Amount distribution and outlier treatment<a class="anchor-link" href="#4.-Amount-distribution-and-outlier-treatment">¶</a></h2><p>The global 99th percentile is a review threshold, not a fraud label. Amounts above it remain in the output and are identified by <code>is_amount_above_p99</code>. A high amount alone is not evidence of an error: large purchases may be genuine and may matter for identifying high-value merchants. Flagging preserves these transactions for review without assuming they are invalid. No trimming, winsorisation or imputation was applied, so no deletion-based before/after comparison is appropriate.</p>
 <p>The histogram uses log10(1 + AUD amount) bins to show the full right tail without dropping large transactions. Tick labels display AUD values. The threshold and counts are calculated from the full saved dataset, not a sample.</p>
 </div>
 </div>
@@ -8642,8 +8642,8 @@ Transactions retained with an unmatched merchant: 580,830
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h2 id="7.-Outputs,-validation-and-handoff">7. Outputs, validation and handoff<a class="anchor-link" href="#7.-Outputs,-validation-and-handoff">¶</a></h2><ul>
-<li><code>data/curated/curated_transactions/</code>: one row per order, partitioned by year/month. Read the whole directory.</li>
-<li>Audit, quarantine, join coverage, snapshot coverage, merchant exceptions, field-quality profile and metadata are stored beside it.</li>
+<li><code>data/curated/curated_transactions/</code>: one row per order, partitioned by year/month in the full local output. This large directory is shared separately and is not included in the GitHub copy.</li>
+<li>Small audit, join coverage, snapshot coverage, merchant exceptions, field-quality profile and metadata reports are included under <code>data/curated/</code>. The quarantine Parquet is also shared separately.</li>
 <li><code>analysis_results/</code>: aggregate amount distributions, outlier impact, merchant coverage and optional ABN diagnostics generated for this summary.</li>
 <li>Source <code>src/</code> and existing tests remain unchanged. Four existing tests passed during the original full-data run; this update separately verifies saved-output counts, uniqueness, report reconciliation and notebook execution.</li>
 </ul>

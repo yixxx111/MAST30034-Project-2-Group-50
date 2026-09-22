@@ -1,0 +1,2 @@
+boundary_polygons,boundary_polygons_matched_to_feature_table,boundary_polygons_missing_feature_data_pct,feature_table_postcodes_with_no_boundary_polygon,note
+2513,2475,1.5,213,unmatched boundary polygons are mostly PO-box-only / non-standard postcodes with no ABS SEIFA/Census/ATO record; unmatched feature-table postcodes are mostly PO boxes that have a statistical record but no physical delivery area boundary
