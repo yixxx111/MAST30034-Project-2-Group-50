@@ -1,0 +1,4 @@
+geopandas>=0.14,<2
+shapely>=2,<3
+pandas>=2,<4
+matplotlib>=3.8,<4
