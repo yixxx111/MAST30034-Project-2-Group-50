@@ -1,19 +1,19 @@
 # merchant_features
 
 Builds the merchant-level feature table used to shortlist BNPL candidate merchants
-(project step 3: "构造商户特征"). One row per `merchant_abn` that appears in
+(project step 3: build merchant-level features). One row per `merchant_abn` that appears in
 `member2_curation`'s curated transactions, combining:
 
 - **Transaction scale & recency**: `total_transactions`, `total_revenue`, `first_order_date`,
   `last_order_date`, `active_months_all_time`.
-- **Average order value (客单价)**: `avg_transaction_value`.
-- **Repeat custom (复购)**: `repeat_consumer_share` — share of a merchant's distinct
+- **Average order value**: `avg_transaction_value`.
+- **Repeat custom**: `repeat_consumer_share` — share of a merchant's distinct
   consumers who placed more than one order with it.
-- **Revenue trend (增长)**: `normalized_monthly_revenue_trend` — the linear trend slope
+- **Revenue trend**: `normalized_monthly_revenue_trend` — the linear trend slope
   of monthly revenue, normalised by mean monthly revenue (`regr_slope / regr_avgy`).
   **This is a normalised slope, not a month-over-month growth rate** — don't read it as
   a percentage change.
-- **Stability (稳定性)**: `monthly_revenue_cv` — coefficient of variation
+- **Stability**: `monthly_revenue_cv` — coefficient of variation
   (`stddev_samp / avg`) of monthly revenue.
 - **Customer-base regional/socio-economic profile**: transaction-weighted averages of a
   curated 13-field subset of the postcode-level Census/SEIFA/ATO features built in
@@ -163,7 +163,7 @@ answered the wrong one).**
    comparison.** `external_ato` already downloads and keeps the official Table 8
    median/mean candidates separately (`external_ato/median_reference/`, 2,317 postcodes)
    specifically so this comparison can be done, but its own README/VALIDATION are explicit
-   that "不擅自决定采用均值还是中位数" (not deciding mean vs. median unilaterally) --
+   that it does not unilaterally decide between mean and median --
    the candidate table is not merged into the 21-column core output, and coverage/
    definitional differences between the two statistics (Table 6B totals vs. Table 8's own
    median, different eligible-reporter definitions) haven't been reconciled. Using the mean
