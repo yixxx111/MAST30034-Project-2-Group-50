@@ -180,7 +180,7 @@ are unaffected by this fix).
 | Output row count is between 4,000 and 5,000 | A join exploding or collapsing rows unexpectedly (actual: 4,422) |
 | `sum(merchant_features.total_revenue) == sum(curated_transactions.dollar_value)` (to $0.01) | The transaction→merchant aggregation losing or double-counting revenue |
 | Tag parsing produces zero nulls | The regex failing to match a `tbl_merchants.tags` value |
-| Distinct `merchant_category` count == 25 | Case/whitespace variants fragmenting what the project overview calls the "原始25类" |
+| Distinct `merchant_category` count == 25 | Case/whitespace variants fragmenting what the project overview calls the "original 25 categories" |
 
 ## Result of the last run
 

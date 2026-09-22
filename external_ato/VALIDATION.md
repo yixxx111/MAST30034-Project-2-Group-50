@@ -1,65 +1,97 @@
-# ATO 验证报告
+# ATO validation report
 
-验证日期：2026-09-20。验证基于当前代码与官方原始文件实际运行，不是预期结果。
+Validation date: 2026-09-20. Validated by actually running the current code against the official
+source files, not a description of expected results.
 
-## 已完成的工作
+## What's been done
 
-- Table 6B 输入 2,639 条记录；输出 2,630 个唯一邮编、21 列。
-- 排除 8 条州 other 汇总记录及 1 条 Overseas 记录。对应人数为 11,496 和 123,657。
-- 全表人数 15,535,395。没有因为统计极端值、缺失或小分母删除普通邮编。
-- 7 个选定来源字段在 Table 6A 子组之和与 Table 6B 间逐记录对账；无缺失键、额外键或超差记录。
-- 对账失败现在会终止清洗，而不是只写一个报告。
-- 选定数值及派生字段无缺失、非法计数或比例越界；质量报告保留表头。
-- 255 个邮编的派生分母小于 100；69 个邮编使用州 other 的 SA4 占位名称。均保留并标记。
-- 此次补齐前后 `ato_clean.csv` 的字段及全部行值完全相同，保留 Claude 的特征修改。
+- Table 6B input: 2,639 records; output: 2,630 unique postcodes, 21 columns.
+- Excluded 8 state-"other" aggregate records and 1 "Overseas" record. Corresponding person counts:
+  11,496 and 123,657.
+- Total person count across the table: 15,535,395. No ordinary postcode was removed for being a
+  statistical outlier, having missing data, or a small denominator.
+- 7 selected source fields were reconciled record-by-record between the Table 6A sub-group sums and
+  Table 6B; no missing keys, extra keys, or out-of-tolerance records.
+- A reconciliation failure now stops the cleaning run, instead of only writing a report.
+- The selected numeric and derived fields have no missing values, invalid counts, or out-of-range
+  ratios; the quality report keeps the header row.
+- 255 postcodes have a derived denominator below 100; 69 postcodes use the state-"other" SA4
+  placeholder name. Both are kept and flagged, not removed.
+- Before and after this update, the fields and every row value in `ato_clean.csv` are identical,
+  preserving Claude's feature revisions.
 
-## CSV 和 Parquet
+## CSV and Parquet
 
-两种格式同时输出，并自动检查 Parquet 写入/读回结果一致。
-邮编、年份、州、SA4 为 string；人数和最小分母为 int64；质量标记为 bool；金额/派生值为 double。
-合成测试覆盖空值保存和 0800 前导零；summary notebook 对完整 CSV/Parquet 做值一致性检查。
-读取 CSV 只需 `dtype={"postcode": "string"}`，不要把所有数值列都转为字符串。
-Parquet 支持 pandas、PyArrow、DuckDB 和 Spark，并非仅为 Spark 准备。
+Both formats are output together, and the Parquet write/read-back result is automatically checked
+for consistency.
+Postcode, year, state, SA4 are string; person counts and minimum denominator are int64; quality
+flags are bool; amounts/derived values are double.
+Synthetic tests cover null-value preservation and the leading zero in `0800`; the summary notebook
+checks value consistency between the full CSV and Parquet.
+Reading the CSV only needs `dtype={"postcode": "string"}` -- don't convert every numeric column to
+string.
+Parquet is supported by pandas, PyArrow, DuckDB and Spark; it isn't only intended for Spark.
 
-## 消费者覆盖及联合覆盖
+## Consumer coverage and combined coverage
 
-实际读取项目 Part 1 ZIP 中的消费者邮编/州，未输出姓名、地址或个人 ID。
-- 消费者总数 499,999；ATO 匹配 414,825（82.97%）；未匹配 85,174；无格式无效邮编。
-- 不同有效消费者邮编 3,167，其中匹配 2,627，未匹配 540。
-- 889 名消费者的州与 ATO 州不同；仅记录差异，未据此剔除。
-- ATO、Census、SEIFA 联合邮编覆盖 404,185 人（80.84%）。比较来源哈希保存在 metadata。
-- 联合覆盖只是键存在，不证明所有外部字段完整；这里不是交易笔数/金额覆盖率。
-- 号段分类只是启发式标签，不能证明邮编类型或缺失原因。不能据此断定未匹配邮编一定被抑制。
+Consumer postcode/state were read directly from the project's Part 1 ZIP; no name, address or
+personal ID is output.
+- Total consumers: 499,999; matched to ATO: 414,825 (82.97%); unmatched: 85,174; no invalidly
+  formatted postcodes.
+- Distinct valid consumer postcodes: 3,167, of which 2,627 matched and 540 did not.
+- 889 consumers' recorded state differs from ATO's state; the discrepancy is only logged, not used
+  to exclude them.
+- Combined ATO+Census+SEIFA postcode coverage: 404,185 people (80.84%). Source comparison hashes are
+  kept in the metadata.
+- Combined coverage only means the key exists -- it doesn't prove every external field is complete,
+  and this is not a transaction-count/amount coverage rate.
+- The number-range classification is only a heuristic label; it doesn't prove the postcode type or
+  the reason for a non-match, and it cannot be used to conclude that an unmatched postcode was
+  necessarily suppressed.
 
-## 官方中位数核实
+## Official median verification
 
-已下载并检查 2021–22 Individuals Table 8 及完整 Notes。
-单独保存到 `median_reference/`：2,317 行，2,270 行具有 2021–22 数值，47 行为官方 na，保留 null。
-官方说明 2013–14 后只发布该年度申报数超过 200 的邮编；自 2016–17 起，均值/中位数使用报告 taxable income or loss 标签的个人（包括零值）。
-候选表不合并到 21 列核心输出，不擅自决定采用均值还是中位数。
-需要在特征选择阶段比较覆盖和统计口径，不能用 Table 6B 总额推算中位数。
-来源和原文件 SHA-256 记录在 median_reference/metadata.json；原始 Notes 原文同时保存。
+Downloaded and checked the 2021-22 Individuals Table 8 and its full Notes.
+Kept separately in `median_reference/`: 2,317 rows, of which 2,270 have a 2021-22 value and 47 are
+officially n/a, kept as null.
+The official notes state that from 2013-14 only postcodes with more than 200 returns for that year
+are published; from 2016-17, the mean/median uses individuals reporting a taxable income or loss
+label (including zero values).
+The candidate table is not merged into the 21-column core output, and no unilateral decision is made
+about using mean vs. median.
+Coverage and statistical basis need to be compared at the feature-selection stage; the median cannot
+be inferred from Table 6B's totals.
+Source and original-file SHA-256 hashes are recorded in `median_reference/metadata.json`; the
+original Notes text is also kept.
 
-## 自动化测试
+## Automated tests
 
-运行：`python -m unittest discover -s external_ato/tests -v`
-实际结果：16 项通过（包括官方 Excel 回归测试，无跳过）。
-范围：邮编规范化、未知标签/州、重复键、字段缺失、负收入保留、缺失与零分母、比例越界、
-小分母、SA4 占位、CSV/ZIP 消费者读取、联合覆盖、6A/6B 对账及拦截、Parquet 类型与空值。
+Run: `python -m unittest discover -s external_ato/tests -v`
+Actual result: 16 passed (including the official-Excel regression test, none skipped).
+Coverage: postcode normalisation, unknown labels/states, duplicate keys, missing fields, negative
+income preserved, missing/zero denominators, out-of-range ratios, small denominators, SA4
+placeholders, CSV/ZIP consumer reading, combined coverage, 6A/6B reconciliation and its stop
+condition, and Parquet types/nulls.
 
-## 执行 summary
+## Running the summary
 
-运行：`python external_ato/build_summary.py`
-Notebook 包含形状检查、CSV/Parquet 一致性、对账、覆盖、数据字典、两张图及官方中位数候选说明。
-`curation_summary/ato_summary.ipynb` 保留执行结果；HTML 提供不需要 notebook 环境的阅读版本。
+Run: `python external_ato/build_summary.py`
+The notebook includes shape checks, CSV/Parquet consistency, reconciliation, coverage, the data
+dictionary, two charts, and notes on the official median candidates.
+`curation_summary/ato_summary.ipynb` keeps the executed results; the HTML gives a readable version
+that doesn't need a notebook environment.
 
-## 使用范围
+## Scope of use
 
-2021–22 为收入参考年度；源数据截至 2023-10-31 处理，不能用于声称 2021–22 当时已知的历史预测。
-地区税务值不是个人实际收入、可支配收入、购买力或信用风险。
-未完成全量交易接入、商户级特征构造、欺诈分析或商户评分；这些不属于本次清洗补齐范围。
+2021-22 is the income reference year; the source data is processed as at 2023-10-31 and cannot be
+used to claim it was known as a historical prediction at the time of 2021-22 itself.
+Regional tax values are not an individual's actual income, disposable income, purchasing power, or
+credit risk.
+Full transaction integration, merchant-level feature construction, fraud analysis, and merchant
+scoring have not been done here; they are out of scope for this cleaning update.
 
-## 备份
+## Backups
 
-小组仓库同级 `ato_backups_20260920/` 保存 Codex 2026-09-16 原版 ZIP、Claude 修改版 ZIP，
-以及本次更新前 results。原版恢复自仍存在的 /private/tmp/ato-work 副本，未覆盖现行代码。
+A sibling directory to the group repo, `ato_backups_20260920/`, keeps the original Codex 2026-09-16
+ZIP, Claude's modified ZIP, and the results from before this update. The original was restored from
+a still-existing `/private/tmp/ato-work` copy and has not overwritten the current code.

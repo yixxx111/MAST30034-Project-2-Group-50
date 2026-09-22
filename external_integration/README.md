@@ -1,27 +1,36 @@
-# 外部数据接入（Census + SEIFA + ATO）
+# External data integration (Census + SEIFA + ATO)
 
-把三个组员各自清洗好的邮编级别外部数据（Census、SEIFA、ATO）按邮编（postcode）合并成一张地区特征维度表，
-再用它去关联消费者和交易数据。目的是给后续商户特征构造提供地区人口/收入/社会经济背景，不做商户评分或欺诈分析。
+Merges the three teammates' already-cleaned postcode-level external datasets (Census, SEIFA, ATO)
+into a single postcode-level feature dimension table by postcode, then uses it to join onto consumer
+and transaction data. The goal is to give the later merchant-feature-construction step regional
+population/income/socio-economic background -- this module does not do merchant scoring or fraud
+analysis.
 
-## 先看这些文件
+## Start here
 
-- `VALIDATION.md`：实际运行的匹配率、覆盖情况和当前限制。
-- `results/external_postcode_features.parquet` / `.csv`：三源合并后的邮编维度表（推荐用 parquet）。
-- `results/data_dictionary.csv`：141 个字段各自的来源、定义、单位。
-- `results/postcode_source_patterns.csv`：邮编在三个来源中的匹配组合分布。
-- `results/consumer_coverage.csv`、`consumer_feature_missingness.csv`、`consumer_postcode_exceptions.csv`：
-  消费者层面接入后的匹配率、逐字段缺失率、未完全匹配的邮编清单。
-- `results/transaction_coverage.csv`、`transaction_feature_missingness.csv`、`transaction_postcode_exceptions.csv`：
-  交易层面接入后的匹配率（按行数和按金额两种口径）、未完全匹配的邮编清单。
-- `results/transaction_coverage_by_state.csv`、`transaction_amount_by_match_status.csv`：
-  按消费者所在州拆分的匹配率、按匹配状态拆分的交易金额分布（复核发现单一整体覆盖率会掩盖州与州
-  之间的差异）。由 `integrate.py` 里的 `write_transaction_diagnostics()` 在 `run()` 中自动生成，
-  不是脱离流水线的一次性脚本，可复现；详见 VALIDATION.md。
-- `results/metadata.json`：三个来源文件的路径、SHA-256、行数，以及本次运行的版本信息。
+- `VALIDATION.md`: the actual match rates, coverage, and current limitations from the real run.
+- `results/external_postcode_features.parquet` / `.csv`: the postcode dimension table after merging
+  all three sources (parquet recommended).
+- `results/data_dictionary.csv`: the source, definition, and unit for each of the 141 fields.
+- `results/postcode_source_patterns.csv`: the distribution of which combination of sources each
+  postcode matched.
+- `results/consumer_coverage.csv`, `consumer_feature_missingness.csv`, `consumer_postcode_exceptions.csv`:
+  the match rate, per-field missingness rate, and list of postcodes that didn't fully match, after
+  joining onto consumers.
+- `results/transaction_coverage.csv`, `transaction_feature_missingness.csv`, `transaction_postcode_exceptions.csv`:
+  the match rate (by row count and by amount), and list of postcodes that didn't fully match, after
+  joining onto transactions.
+- `results/transaction_coverage_by_state.csv`, `transaction_amount_by_match_status.csv`:
+  the match rate split by the consumer's state, and the transaction-amount distribution split by
+  match status (a review found that a single overall coverage rate can mask differences between
+  states). Generated automatically by `write_transaction_diagnostics()` inside `integrate.py`'s
+  `run()`, not a one-off script outside the pipeline, so it's reproducible; see VALIDATION.md.
+- `results/metadata.json`: the path, SHA-256, and row count of each of the three source files, plus
+  version info for this run.
 
-## 运行
+## Running it
 
-从小组仓库根目录运行：
+Run from the group repo root:
 
 ```bash
 python -m pip install -r external_integration/requirements.txt
@@ -32,56 +41,75 @@ python external_integration/integrate.py \
 python -m unittest discover -s external_integration/tests -v
 ```
 
-输出目录必须为空；上面重跑写到新目录，不要覆盖 `results/`。`--transactions` 指向 member2 输出的
-`curated_transactions`（parquet 分区文件夹）；不传就只做消费者层接入。
+The output directory must be empty; the re-run above writes to a new directory, don't overwrite
+`results/`. `--transactions` points to member2's `curated_transactions` output (the parquet
+partition folder); without it, only the consumer-layer join is done.
 
-## 接入逻辑
+## Integration logic
 
-1. `build_dimension`：分别读取 `external_census/results/census_clean.parquet`、
-   `external_seifa/results/seifa_clean.parquet`、`external_ato/results/ato_clean.parquet`，
-   校验邮编唯一且非空、参考年份单一（Census/SEIFA 为 2021，ATO 为 2021-22），
-   字段名加来源前缀后按邮编做 outer join，保留每个来源的匹配标记（`{source}_matched`）和综合标记
-   （`all_sources_matched`）。
-2. `enrich`：把维度表 LEFT JOIN 到消费者或交易数据上（按标准化后的四位邮编）。
-   连接前后做了三重校验：行数与唯一 ID 数不变、原始列的值完全不变（哈希校验，等价于逐格比对但对千万级
-   数据量更省内存）、金额总和（仅交易层）不变；任何一项校验失败都会直接报错终止，而不是只写一份报告。
-3. 每次接入都会输出：匹配率报告（`{scope}_coverage.csv`）、逐字段缺失率（`{scope}_feature_missingness.csv`）、
-   未完全匹配的邮编清单（`{scope}_postcode_exceptions.csv`）。
-4. **消费者层**和**交易层**用的维度表粒度不同：消费者层（约50万行）用完整的 141 列外部特征表；
-   交易层（约1400万行）默认只用精简维度表（`reduce_dimension`：邮编 + 4 个匹配标记位，不含 141 个具体
-   特征值）——把全部 141 列贴到 1400 万行交易上计算量和存储量都很大，而 overview 里也明确说了不需要
-   把所有数据存成一张巨大的交易表。交易层这一步要拿到的是匹配率和连接前后行数是否一致，不是每笔交易
-   的地区特征值本身；具体特征值留到第三步按商户聚合之后再关联（那时候是几千行，不是一千四百万行，
-   关联全部 141 列成本很低）。需要交易层也带完整 141 列时可以加 `--transactions-full`，但会明显更慢、
-   输出也大得多。
+1. `build_dimension`: reads `external_census/results/census_clean.parquet`,
+   `external_seifa/results/seifa_clean.parquet`, and `external_ato/results/ato_clean.parquet`
+   separately, checks that postcode is unique and non-null and that the reference year is singular
+   (2021 for Census/SEIFA, 2021-22 for ATO), prefixes field names with their source, and does an
+   outer join on postcode, keeping each source's match flag (`{source}_matched`) and a combined flag
+   (`all_sources_matched`).
+2. `enrich`: LEFT JOINs the dimension table onto the consumer or transaction data (on the
+   normalised 4-digit postcode). Three checks run before/after the join: row count and unique-ID
+   count unchanged, the original columns' values completely unchanged (a hash check, equivalent to a
+   cell-by-cell comparison but far more memory-efficient at tens-of-millions-of-rows scale), and the
+   amount total (transactions only) unchanged; any failed check raises an error and stops the run
+   immediately, rather than just writing a report.
+3. Every join produces: a match-rate report (`{scope}_coverage.csv`), per-field missingness
+   (`{scope}_feature_missingness.csv`), and a list of postcodes that didn't fully match
+   (`{scope}_postcode_exceptions.csv`).
+4. The **consumer layer** and the **transaction layer** use dimension tables of different
+   granularity: the consumer layer (~500k rows) uses the full 141-column external feature table; the
+   transaction layer (~14M rows) uses a reduced dimension table by default (`reduce_dimension`:
+   postcode + 4 match flags, without the 141 individual feature values) -- attaching all 141 columns
+   to 14M transaction rows would be expensive in both compute and storage, and the project brief also
+   explicitly said there's no need to store everything as one giant transaction table. What this
+   transaction-layer step needs to establish is the match rate and whether row counts hold before/
+   after the join, not each transaction's own regional feature values; the actual feature values are
+   joined later, after merchant-level aggregation in step 3 (at that point it's a few thousand rows,
+   not 14 million, so joining all 141 columns is cheap). Use `--transactions-full` if the transaction
+   layer needs the full 141 columns too, but it's noticeably slower and the output is much larger.
 
-## 当前进度
+## Current progress
 
-- 邮编维度表：已完成，2,710 个邮编、141 列。
-- 消费者层接入：已完成，499,999 条消费者全部保留（LEFT JOIN 不丢行），三源联合匹配率 80.84%。
-- 交易层接入：**已完成**，14,195,505 条交易全部保留，金额总和连接前后一致。三源联合匹配率（按笔数）
-  80.77%，按金额口径 80.77%，与消费者层的 80.84% 非常接近。用的是精简维度表（见上）。
-- `curated_transactions`（member2 的交易数据本体，1400多万行）此前一直没有到手：GitHub 和本地都只有
-  审计/统计 CSV，没有数据本体。后来发现原始交易快照数据是这门课统一发给全组/全班的（Canvas 上
-  "Dataset Release"），不是 member2 独有的东西；已经用你从 Canvas 下载的 `project-2-bnpl-tables-part2/3/4.zip`
-  （原始交易快照）+ member2 已提交到 GitHub 的清洗代码（`member2_curation/src/`），在本地重新跑出了
-  `curated_transactions`，跑出来的行数、去重结果、商户匹配数、p99 金额都和 member2 原始跑出来的
-  `curation_metadata.json` 完全一致（可复现）。这份数据本体很大（790MB），已经在 `.gitignore` 里排除，
-  不会被提交到 GitHub。
+- Postcode dimension table: done, 2,710 postcodes, 141 columns.
+- Consumer-layer join: done, all 499,999 consumers kept (LEFT JOIN doesn't drop rows), combined
+  three-source match rate 80.84%.
+- Transaction-layer join: **done**, all 14,195,505 transactions kept, amount total unchanged
+  before/after the join. Combined three-source match rate (by row count) 80.77%, by amount basis
+  80.77%, very close to the consumer layer's 80.84%. Uses the reduced dimension table (see above).
+- `curated_transactions` (member2's actual transaction data, 14M+ rows) had never been obtained
+  before this: only audit/summary CSVs existed on GitHub and locally, not the data itself. It turned
+  out the raw transaction snapshot data was released to the whole group/class uniformly for this
+  course (Canvas "Dataset Release"), not something unique to member2; using the
+  `project-2-bnpl-tables-part2/3/4.zip` (raw transaction snapshots) you downloaded from Canvas plus
+  member2's cleaning code already committed to GitHub (`member2_curation/src/`),
+  `curated_transactions` was regenerated locally, and the resulting row count, deduplication result,
+  merchant match count, and p99 amount all exactly match member2's original
+  `curation_metadata.json` (reproducible). This data itself is large (790MB) and has already been
+  excluded via `.gitignore`, so it won't be committed to GitHub.
 
-## 来源和时间边界
+## Source and time boundaries
 
-- Census、SEIFA 数据沿用组员已清洗的版本，本模块不重新清洗，只做字段重命名、来源标记和邮编对齐。
-- ATO 数据引用 `external_ato/results/ato_clean.parquet`，口径见该模块自己的 README/VALIDATION。
-- 三个来源分别是 2021 Census、2021 SEIFA、2021-22 ATO 收入年度，口径和采集时点不完全相同，
-  仅作回顾性地区背景使用，不代表交易发生时点已知的信息。
-- ATO 邮编与 ABS POA 沿用邮编（POA）方案，未做 SA2 转换。
+- Census and SEIFA data reuse the teammates' already-cleaned versions; this module does not
+  re-clean them, only renaming fields, tagging their source, and aligning postcodes.
+- ATO data references `external_ato/results/ato_clean.parquet`; see that module's own
+  README/VALIDATION for its basis.
+- The three sources are the 2021 Census, 2021 SEIFA, and the 2021-22 ATO income year, which don't
+  fully share the same basis or collection point in time -- they are used only as retrospective
+  regional background, not as information that was known at the time a transaction occurred.
+- ATO postcodes and ABS POAs both use the postcode (POA) scheme; no SA2 conversion was done.
 
-## 地理可视化（`postcode_map/`）
+## Geospatial visualisation (`postcode_map/`)
 
-上面这些都是表格（覆盖率 %、缺失数、特征 CSV），没有一张真正的地图。补了一个：
-用 ABS 官方 POA（2021）边界数据画出全澳邮编，按 SEIFA IRSD 相对弱势指数十分位上色，
-另外做了悉尼/墨尔本/布里斯班/珀斯四个城市的放大图（全国视角看不清市区小邮编）。
+Everything above is a table (coverage %, missingness counts, feature CSVs) -- there wasn't an actual
+map. This adds one: Australia's postcodes plotted using official ABS POA (2021) boundary data,
+coloured by SEIFA IRSD relative-disadvantage decile, plus zoomed-in insets for Sydney, Melbourne,
+Brisbane and Perth (national scale hides small inner-city postcodes).
 
-数据来源、边界与本模块特征表的匹配覆盖率（2,513 个边界里 2,475 个匹配上，98.5%）、
-复现方法，见 `postcode_map/README.md`。
+See `postcode_map/README.md` for the data sources, the boundary-to-feature-table match coverage
+(2,475 of 2,513 boundaries matched, 98.5%), and how to reproduce it.
