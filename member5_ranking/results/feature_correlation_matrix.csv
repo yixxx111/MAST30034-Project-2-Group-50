@@ -1,0 +1,12 @@
+,estimated_bnpl_revenue,total_revenue,total_transactions,unique_consumers,avg_transaction_value,repeat_consumer_share,normalized_monthly_revenue_trend,monthly_revenue_cv,census_median_household_income_weekly,seifa_irsad_national_decile,ato_taxable_income_or_loss_per_reporter
+estimated_bnpl_revenue,1.0,0.923,0.555,0.613,-0.026,0.636,0.031,-0.239,0.007,0.003,0.004
+total_revenue,0.923,1.0,0.569,0.648,-0.022,0.663,0.032,-0.254,0.007,0.003,0.003
+total_transactions,0.555,0.569,1.0,0.714,-0.081,0.82,0.02,-0.164,0.005,0.003,0.003
+unique_consumers,0.613,0.648,0.714,1.0,-0.168,0.977,0.042,-0.347,0.011,0.006,0.006
+avg_transaction_value,-0.026,-0.022,-0.081,-0.168,1.0,-0.142,-0.214,0.546,-0.026,-0.0,-0.085
+repeat_consumer_share,0.636,0.663,0.82,0.977,-0.142,1.0,0.035,-0.292,0.01,0.005,0.005
+normalized_monthly_revenue_trend,0.031,0.032,0.02,0.042,-0.214,0.035,1.0,-0.223,0.216,0.141,0.132
+monthly_revenue_cv,-0.239,-0.254,-0.164,-0.347,0.546,-0.292,-0.223,1.0,-0.045,-0.024,-0.028
+census_median_household_income_weekly,0.007,0.007,0.005,0.011,-0.026,0.01,0.216,-0.045,1.0,0.751,0.654
+seifa_irsad_national_decile,0.003,0.003,0.003,0.006,-0.0,0.005,0.141,-0.024,0.751,1.0,0.519
+ato_taxable_income_or_loss_per_reporter,0.004,0.003,0.003,0.006,-0.085,0.005,0.132,-0.028,0.654,0.519,1.0
