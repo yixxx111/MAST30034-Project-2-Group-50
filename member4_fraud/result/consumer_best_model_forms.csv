@@ -1,0 +1,7 @@
+model,preprocessing,best_form,best_parameters,saved_model
+Median Baseline,Median imputation,Constant prediction equal to the train+validation target median.,{},models/median_baseline.joblib
+Mean Baseline,Median imputation,Constant prediction equal to the train+validation target mean.,{},models/mean_baseline.joblib
+KNN,Median imputation followed by StandardScaler fitted on training data only.,Average or distance-weighted average of the k nearest standardized training rows.,"{""n_neighbors"": 15, ""p"": 2, ""weights"": ""distance""}",models/knn.joblib
+Linear Regression,Median imputation followed by StandardScaler fitted on training data only.,prediction = intercept + sum(standardized feature coefficient products).,"{""fit_intercept"": true}",models/linear_regression.joblib
+Random Forest,Median imputation fitted on training data only; no scaling.,Average prediction from constrained regression trees.,"{""max_depth"": 10, ""max_features"": 0.7, ""min_samples_leaf"": 20, ""n_estimators"": 300}",models/random_forest.joblib
+XGBoost,Native missing-value handling; no scaling.,Regularized additive boosted regression trees with validation early stopping during tuning.,"{""colsample_bytree"": 0.8, ""learning_rate"": 0.03, ""max_depth"": 4, ""min_child_weight"": 30, ""n_estimators"": 490, ""reg_alpha"": 0.1, ""reg_lambda"": 10.0, ""subsample"": 0.8}",models/xgboost.joblib
