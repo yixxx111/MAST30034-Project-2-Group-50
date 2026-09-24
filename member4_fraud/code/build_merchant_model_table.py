@@ -25,6 +25,7 @@ def build_merchant_model_table(
     repo_root: str | Path | None = None,
     raw_tables_root: str | Path | None = None,
     output_dir: str | Path | None = None,
+    curated_transactions_root: str | Path | None = None,
 ):
     module_dir = Path(__file__).resolve().parent
     member4_dir = module_dir.parent if module_dir.name == "code" else module_dir
@@ -37,9 +38,10 @@ def build_merchant_model_table(
     ).resolve()
     model_output.mkdir(parents=True, exist_ok=True)
 
-    transaction_root = (
-        repo / "member2_curation" / "data" / "curated" / "curated_transactions"
-    )
+    transaction_root = Path(
+        curated_transactions_root
+        or repo / "member2_curation" / "data" / "curated" / "curated_transactions"
+    ).resolve()
     transaction_glob = transaction_root / "order_year=*" / "order_month=*" / "*.parquet"
     consumer_prediction_path = (
         member4_dir / "result" / "consumer_fraud_predictions_all.csv"
