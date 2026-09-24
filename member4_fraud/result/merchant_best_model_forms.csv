@@ -1,6 +1,6 @@
 model,preprocessing,best_form,best_parameters,saved_model
 Mean Baseline,Training-fold median target,Constant mean prediction.,{},models/mean_baseline.joblib
-KNN,Median imputation + StandardScaler inside each fold,Nearest-neighbour regression.,"{""n_neighbors"": 5, ""p"": 2, ""weights"": ""distance""}",models/knn.joblib
+KNN,Median imputation + StandardScaler inside each fold,Nearest-neighbour regression.,"{""n_neighbors"": 8, ""p"": 2, ""weights"": ""distance""}",models/knn.joblib
 Linear Regression,Median imputation + StandardScaler inside each fold,Ordinary linear regression on standardized features.,"{""fit_intercept"": true}",models/linear_regression.joblib
 Random Forest,Training-fold median imputation,Constrained regression-tree ensemble.,"{""max_depth"": 4, ""max_features"": 0.7, ""min_samples_leaf"": 4, ""n_estimators"": 400}",models/random_forest.joblib
 XGBoost,Training-fold median imputation,Regularized shallow boosted trees.,"{""colsample_bytree"": 0.8, ""learning_rate"": 0.03, ""max_depth"": 2, ""min_child_weight"": 5, ""n_estimators"": 250, ""reg_alpha"": 0.1, ""reg_lambda"": 10.0, ""subsample"": 0.8}",models/xgboost.joblib

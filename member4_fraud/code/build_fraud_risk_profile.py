@@ -1,16 +1,15 @@
-"""Build transparent merchant fraud-risk evidence profiles.
+"""Build merchant fraud-risk profiles from KNN and consumer exposure scores.
 
-This module intentionally does not train a merchant fraud model and does not
-calculate a business score or merchant ranking.  It combines two evidence
-sources only:
+The merchant model is trained separately in ``train_merchant_models.py``. This
+module combines two model-derived evidence sources:
 
 1. Amount-weighted exposure to the existing consumer risk scores.
-2. Mean observed merchant fraud probability for the 61 merchants with direct
-   merchant-fraud records.
+2. Cross-validated KNN merchant-risk predictions trained on the 61 merchants
+   with direct merchant-fraud observations.
 
-Coverage, observation count, and maximum observed merchant fraud probability
-are retained as reliability/diagnostic fields and are not embedded in the main
-risk formula.  Missing evidence remains missing; it is never converted to zero.
+The original merchant observations remain as reliability fields and training
+evidence, but are not inserted directly into the final score.  Both model
+signals are converted to merchant percentiles before equal-weight combination.
 """
 
 from __future__ import annotations
@@ -68,6 +67,7 @@ def build_fraud_risk_profile(
     repo_root: str | Path | None = None,
     raw_tables_root: str | Path | None = None,
     output_dir: str | Path | None = None,
+    curated_transactions_root: str | Path | None = None,
 ) -> pd.DataFrame:
     module_dir = Path(__file__).resolve().parent
     member4_dir = module_dir.parent if module_dir.name == "code" else module_dir
@@ -78,10 +78,16 @@ def build_fraud_risk_profile(
     output = Path(output_dir).resolve() if output_dir else member4_dir / "result"
     output.mkdir(parents=True, exist_ok=True)
 
-    transaction_root = repo / "member2_curation" / "data" / "curated" / "curated_transactions"
+    transaction_root = Path(
+        curated_transactions_root
+        or repo / "member2_curation" / "data" / "curated" / "curated_transactions"
+    ).resolve()
     transaction_glob = transaction_root / "order_year=*" / "order_month=*" / "*.parquet"
     consumer_risk_path = (
         member4_dir / "result" / "consumer_fraud_predictions_all.csv"
+    )
+    merchant_knn_path = (
+        member4_dir / "result" / "merchant_fraud_predictions_all.csv"
     )
     merchant_feature_path = (
         repo / "member3_merchant_features" / "results" / "merchant_features.parquet"
@@ -91,6 +97,7 @@ def build_fraud_risk_profile(
 
     required = [
         consumer_risk_path,
+        merchant_knn_path,
         merchant_feature_path,
         consumer_fraud_path,
         merchant_fraud_path,
@@ -158,6 +165,12 @@ def build_fraud_risk_profile(
                 merchant_name,
                 merchant_category
             FROM read_parquet('{_sql_path(merchant_feature_path)}')
+        ), merchant_knn AS (
+            SELECT
+                trim(cast(merchant_abn AS VARCHAR)) AS merchant_abn,
+                cast(knn_score AS DOUBLE) AS knn_score,
+                selected_model
+            FROM read_csv_auto('{_sql_path(merchant_knn_path)}')
         ), raw_merchant_fraud AS (
             SELECT
                 trim(cast(merchant_abn AS VARCHAR)) AS merchant_abn,
@@ -209,6 +222,8 @@ def build_fraud_risk_profile(
             e.amount_weighted_consumer_risk,
             e.transaction_mean_consumer_risk,
             e.maximum_consumer_risk,
+            k.knn_score,
+            k.selected_model AS merchant_risk_model,
             f.merchant_fraud_observation_count,
             f.mean_observed_merchant_fraud,
             f.max_observed_merchant_fraud,
@@ -217,6 +232,7 @@ def build_fraud_risk_profile(
             f.latest_merchant_fraud_date
         FROM merchant_master m
         LEFT JOIN merchant_consumer_exposure e USING (merchant_abn)
+        LEFT JOIN merchant_knn k USING (merchant_abn)
         LEFT JOIN merchant_observed_fraud f USING (merchant_abn)
         ORDER BY m.merchant_abn
         """
@@ -229,6 +245,7 @@ def build_fraud_risk_profile(
         "amount_weighted_consumer_risk",
         "transaction_mean_consumer_risk",
         "maximum_consumer_risk",
+        "knn_score",
         "mean_observed_merchant_fraud",
         "max_observed_merchant_fraud",
         "latest_observed_merchant_fraud",
@@ -241,8 +258,8 @@ def build_fraud_risk_profile(
     profile["consumer_exposure_percentile"] = _percentile_rank(
         profile["amount_weighted_consumer_risk"]
     )
-    profile["direct_merchant_fraud_percentile"] = _percentile_rank(
-        profile["mean_observed_merchant_fraud"]
+    profile["knn_merchant_risk_percentile"] = _percentile_rank(
+        profile["knn_score"]
     )
     profile["has_consumer_risk_information"] = profile[
         "amount_weighted_consumer_risk"
@@ -250,30 +267,26 @@ def build_fraud_risk_profile(
     profile["has_direct_merchant_fraud_information"] = profile[
         "mean_observed_merchant_fraud"
     ].notna()
+    profile["has_knn_merchant_risk_information"] = profile["knn_score"].notna()
 
     has_consumer = profile["has_consumer_risk_information"]
     has_direct = profile["has_direct_merchant_fraud_information"]
+    has_knn = profile["has_knn_merchant_risk_information"]
     profile["fraud_evidence_status"] = np.select(
-        [has_consumer & has_direct, has_consumer, has_direct],
-        ["consumer_and_direct", "consumer_only", "direct_only"],
+        [has_consumer & has_knn, has_consumer, has_knn],
+        ["consumer_and_knn", "consumer_only", "knn_only"],
         default="no_information",
     )
 
     consumer = profile["consumer_exposure_percentile"]
-    direct = profile["direct_merchant_fraud_percentile"]
-    profile["fraud_risk_equal_weight"] = _combine_available(consumer, direct, 0.5, 0.5)
-    profile["fraud_risk_consumer_70_direct_30"] = _combine_available(
-        consumer, direct, 0.7, 0.3
-    )
-    profile["fraud_risk_consumer_30_direct_70"] = _combine_available(
-        consumer, direct, 0.3, 0.7
-    )
-    profile["fraud_risk_index"] = profile["fraud_risk_equal_weight"]
+    knn = profile["knn_merchant_risk_percentile"]
+    profile["fraud_risk_index"] = _combine_available(consumer, knn, 0.5, 0.5)
+    profile["risk_safety_score"] = 100.0 * (1.0 - profile["fraud_risk_index"])
     profile["fraud_risk_method"] = np.select(
-        [has_consumer & has_direct, has_consumer, has_direct],
-        ["0.5 consumer exposure + 0.5 direct merchant evidence",
+        [has_consumer & has_knn, has_consumer, has_knn],
+        ["0.5 consumer exposure percentile + 0.5 KNN merchant risk percentile",
          "consumer exposure only",
-         "direct merchant evidence only"],
+         "KNN merchant risk only"],
         default="not available",
     )
 
@@ -287,10 +300,11 @@ def build_fraud_risk_profile(
             {"metric": "total_merchants", "value": len(profile)},
             {"metric": "merchants_with_consumer_risk", "value": int(has_consumer.sum())},
             {"metric": "merchants_with_direct_fraud", "value": int(has_direct.sum())},
-            {"metric": "consumer_and_direct", "value": int((has_consumer & has_direct).sum())},
-            {"metric": "consumer_only", "value": int((has_consumer & ~has_direct).sum())},
-            {"metric": "direct_only", "value": int((~has_consumer & has_direct).sum())},
-            {"metric": "no_information", "value": int((~has_consumer & ~has_direct).sum())},
+            {"metric": "merchants_with_knn_risk", "value": int(has_knn.sum())},
+            {"metric": "consumer_and_knn", "value": int((has_consumer & has_knn).sum())},
+            {"metric": "consumer_only", "value": int((has_consumer & ~has_knn).sum())},
+            {"metric": "knn_only", "value": int((~has_consumer & has_knn).sum())},
+            {"metric": "no_information", "value": int((~has_consumer & ~has_knn).sum())},
             {"metric": "median_consumer_amount_coverage", "value": profile.consumer_risk_amount_coverage.median()},
             {"metric": "mean_consumer_amount_coverage", "value": profile.consumer_risk_amount_coverage.mean()},
             {"metric": "median_observed_consumer_label_amount_coverage", "value": profile.observed_consumer_label_amount_coverage.median()},
@@ -300,18 +314,18 @@ def build_fraud_risk_profile(
     summary.to_csv(output / "fraud_risk_coverage_summary.csv", index=False)
 
     sensitivity = profile.loc[
-        profile.has_direct_merchant_fraud_information,
+        profile.has_knn_merchant_risk_information,
         [
             "merchant_abn",
             "merchant_name",
             "consumer_exposure_percentile",
-            "direct_merchant_fraud_percentile",
-            "fraud_risk_consumer_70_direct_30",
-            "fraud_risk_equal_weight",
-            "fraud_risk_consumer_30_direct_70",
+            "knn_score",
+            "knn_merchant_risk_percentile",
+            "fraud_risk_index",
+            "risk_safety_score",
         ],
     ].copy()
-    sensitivity.to_csv(output / "fraud_risk_weight_sensitivity.csv", index=False)
+    sensitivity.to_csv(output / "knn_fraud_risk_scores.csv", index=False)
 
     return summary
 

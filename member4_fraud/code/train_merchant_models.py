@@ -1,8 +1,10 @@
-"""Train five merchant-level fraud-risk models on 61 labelled merchants.
+"""Train a KNN merchant fraud-risk model on 61 labelled merchants.
 
 The target is the mean supplied merchant fraud score per merchant. Model and
-hyperparameter selection use repeated cross-validation on the training
-merchants; a stratified merchant holdout is opened once after selection.
+K selection use repeated cross-validation on the training merchants; a
+stratified merchant holdout is opened once after selection.  Other regressors
+are retained as benchmarks only; every downstream merchant score is produced
+by the cross-validated KNN pipeline.
 """
 
 from __future__ import annotations
@@ -50,9 +52,6 @@ MODEL_FEATURES = [
     "high_value_transaction_ratio_90d",
     "sales_growth_log",
     "transaction_value_cv",
-    "amount_weighted_consumer_risk",
-    "unique_consumer_mean_risk",
-    "high_risk_revenue_share",
     "merchant_take_rate_pct",
 ]
 
@@ -365,7 +364,10 @@ def run_merchant_model_experiment(
     comparison = pd.DataFrame(comparison_rows).sort_values(
         ["cv_mae_mean", "cv_rmse_mean"], ignore_index=True
     )
-    selected_name = comparison.iloc[0]["model"]
+    # The merchant-risk methodology is intentionally KNN based.  Repeated CV
+    # still selects K, neighbour weighting, and therefore the fitted KNN form;
+    # the other model families are diagnostics rather than scoring candidates.
+    selected_name = "KNN"
     comparison.insert(1, "selected_by_cv", comparison.model.eq(selected_name))
     comparison.to_csv(output / "merchant_model_comparison.csv", index=False)
     _save_parquet(test_predictions, output / "merchant_test_predictions.parquet")
@@ -422,9 +424,11 @@ def run_merchant_model_experiment(
 
     selected_model = refitted_models[selected_name]
     predictions = scoring[["merchant_abn", "scoring_date", "merchant_name", "merchant_category"]].copy()
-    predictions["predicted_merchant_fraud_probability"] = np.clip(
+    predictions["knn_score"] = np.clip(
         selected_model.predict(scoring[MODEL_FEATURES]), 0.0, 1.0
     )
+    # Retain the generic name as a compatibility alias for existing notebooks.
+    predictions["predicted_merchant_fraud_probability"] = predictions["knn_score"]
     observed = training[["merchant_abn", "fraud_probability", "target_observations"]].rename(
         columns={"fraud_probability": "observed_merchant_fraud_probability"}
     )
@@ -466,12 +470,16 @@ def run_merchant_model_experiment(
         "training_merchants": len(train),
         "held_out_test_merchants": len(test),
         "validation": "RepeatedKFold: 5 folds x 10 repeats on training merchants",
-        "selection_rule": "lowest repeated-CV mean MAE, RMSE tie-breaker",
+        "selection_rule": (
+            "KNN fixed as the scoring model; neighbour count and weighting are "
+            "selected by lowest repeated-CV mean MAE with RMSE as tie-breaker"
+        ),
         "selected_model": selected_name,
         "features": MODEL_FEATURES,
         "controls": [
             "One target row per merchant; repeated merchant-date labels are aggregated before splitting.",
             "Merchant ABN and direct fraud score are excluded from model features.",
+            "Consumer-risk exposure features are excluded from KNN and combined only after merchant scoring.",
             "Imputation and scaling are fitted inside each cross-validation fold.",
             "The held-out merchant test set is not used for hyperparameter or model selection.",
             "Consumer risk is an upstream model-derived exposure feature and is not a confirmed fraud event.",
