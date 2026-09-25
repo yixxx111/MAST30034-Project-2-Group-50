@@ -9,7 +9,9 @@ module combines two model-derived evidence sources:
 
 The original merchant observations remain as reliability fields and training
 evidence, but are not inserted directly into the final score.  Both model
-signals are converted to merchant percentiles before equal-weight combination.
+signals are converted to merchant percentiles before combining them under three
+documented weight scenarios.  The equal-weight scenario remains the default for
+backward compatibility.
 """
 
 from __future__ import annotations
@@ -22,6 +24,12 @@ import pandas as pd
 
 
 SCORING_DATE = "2022-02-28"
+
+FRAUD_WEIGHT_SCENARIOS = {
+    "70c_30knn": (0.7, 0.3),
+    "50c_50knn": (0.5, 0.5),
+    "30c_70knn": (0.3, 0.7),
+}
 
 
 def _sql_path(path: Path) -> str:
@@ -61,6 +69,47 @@ def _combine_available(
     combined.loc[consumer_only] = consumer.loc[consumer_only]
     combined.loc[direct_only] = direct.loc[direct_only]
     return combined
+
+
+def _weight_sensitivity_summary(profile: pd.DataFrame, top_n: int = 100) -> pd.DataFrame:
+    """Summarise how alternative component weights change merchant rankings."""
+    default_column = "fraud_risk_50c_50knn"
+    default_scores = profile[default_column]
+    default_top = set(profile.nlargest(top_n, default_column)["merchant_abn"])
+    rows = []
+    for scenario in FRAUD_WEIGHT_SCENARIOS:
+        risk_column = f"fraud_risk_{scenario}"
+        scores = profile[risk_column]
+        valid = default_scores.notna() & scores.notna()
+        rank_correlation = (
+            default_scores.loc[valid].rank(method="average").corr(
+                scores.loc[valid].rank(method="average")
+            )
+            if valid.sum() > 1
+            else np.nan
+        )
+        scenario_top = set(profile.nlargest(top_n, risk_column)["merchant_abn"])
+        rows.append(
+            {
+                "scenario": scenario,
+                "consumer_weight": FRAUD_WEIGHT_SCENARIOS[scenario][0],
+                "knn_weight": FRAUD_WEIGHT_SCENARIOS[scenario][1],
+                "merchant_count": int(scores.notna().sum()),
+                "mean_fraud_risk": scores.mean(),
+                "standard_deviation": scores.std(),
+                "spearman_vs_50c_50knn": rank_correlation,
+                "mean_absolute_score_change_vs_50c_50knn": (
+                    scores.loc[valid] - default_scores.loc[valid]
+                ).abs().mean(),
+                "top_100_overlap_count_vs_50c_50knn": len(
+                    scenario_top & default_top
+                ),
+                "top_100_overlap_rate_vs_50c_50knn": len(
+                    scenario_top & default_top
+                ) / len(default_top),
+            }
+        )
+    return pd.DataFrame(rows)
 
 
 def build_fraud_risk_profile(
@@ -296,8 +345,21 @@ def build_fraud_risk_profile(
 
     consumer = profile["consumer_exposure_percentile"]
     knn = profile["knn_merchant_risk_percentile"]
-    profile["fraud_risk_index"] = _combine_available(consumer, knn, 0.5, 0.5)
-    profile["risk_safety_score"] = 100.0 * (1.0 - profile["fraud_risk_index"])
+    for scenario, (consumer_weight, knn_weight) in FRAUD_WEIGHT_SCENARIOS.items():
+        risk_column = f"fraud_risk_{scenario}"
+        safety_column = f"risk_safety_{scenario}"
+        profile[risk_column] = _combine_available(
+            consumer,
+            knn,
+            consumer_weight,
+            knn_weight,
+        )
+        profile[safety_column] = 100.0 * (1.0 - profile[risk_column])
+
+    # Retain the original column names so downstream code continues to receive
+    # the neutral 50/50 score unless it explicitly selects another scenario.
+    profile["fraud_risk_index"] = profile["fraud_risk_50c_50knn"]
+    profile["risk_safety_score"] = profile["risk_safety_50c_50knn"]
     profile["fraud_risk_method"] = np.select(
         [has_consumer & has_knn, has_consumer, has_knn],
         ["0.5 consumer exposure percentile + 0.5 KNN merchant risk percentile",
@@ -331,6 +393,9 @@ def build_fraud_risk_profile(
     )
     summary.to_csv(output / "fraud_risk_coverage_summary.csv", index=False)
 
+    weight_summary = _weight_sensitivity_summary(profile)
+    weight_summary.to_csv(output / "fraud_weight_sensitivity_summary.csv", index=False)
+
     sensitivity = profile.loc[
         profile.has_knn_merchant_risk_information,
         [
@@ -345,6 +410,12 @@ def build_fraud_risk_profile(
             "knn_confidence_score",
             "knn_out_of_distribution",
             "knn_score_source",
+            "fraud_risk_70c_30knn",
+            "risk_safety_70c_30knn",
+            "fraud_risk_50c_50knn",
+            "risk_safety_50c_50knn",
+            "fraud_risk_30c_70knn",
+            "risk_safety_30c_70knn",
             "fraud_risk_index",
             "risk_safety_score",
         ],
