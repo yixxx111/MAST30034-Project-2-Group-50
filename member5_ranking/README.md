@@ -28,9 +28,10 @@ Build an interpretable merchant ranking system for BNPL onboarding.
 - selected external Census / SEIFA / ATO features
 
 ### 6. Risk
-- member4 `fraud_risk_index`, combining the consumer-exposure percentile and
-  the cross-validated KNN merchant-risk percentile
-- `risk_safety_score = 100 * (1 - fraud_risk_index)`
+- fraud_transaction_rate
+- fraud_amount_rate
+- merchant_fraud_probability
+- to be added later
 
 ## Normalisation
 Convert metrics to percentile scores from 0 to 100.
