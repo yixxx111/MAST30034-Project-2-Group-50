@@ -1,0 +1,15 @@
+feature,selected,mutual_information_score
+log_sales_90d,True,0.4438535326970512
+log_total_revenue,True,0.42367988685015856
+unique_consumers,True,0.3622026562116827
+unique_consumers_90d,True,0.3531504655031643
+active_days,True,0.34533244198884994
+order_count_90d,True,0.3424668277272058
+repeat_consumer_share,True,0.33375911019716664
+high_value_transaction_ratio_90d,True,0.2659163132631601
+avg_order_value_90d,False,0.24044068753050762
+transaction_value_cv,False,0.23491871781493723
+avg_transaction_value,False,0.20832242574158855
+days_since_last_transaction,False,0.10076109387908572
+sales_growth_log,False,0.09699207368225249
+merchant_take_rate_pct,False,0.0

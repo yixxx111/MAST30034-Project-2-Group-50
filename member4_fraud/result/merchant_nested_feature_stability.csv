@@ -1,0 +1,15 @@
+feature,outer_fold_selections,outer_folds,selection_rate
+log_total_revenue,15,15,1.0
+active_days,15,15,1.0
+log_sales_90d,15,15,1.0
+avg_transaction_value,11,15,0.7333333333333333
+high_value_transaction_ratio_90d,11,15,0.7333333333333333
+unique_consumers,9,15,0.6
+unique_consumers_90d,8,15,0.5333333333333333
+order_count_90d,7,15,0.4666666666666667
+transaction_value_cv,6,15,0.4
+repeat_consumer_share,6,15,0.4
+days_since_last_transaction,5,15,0.3333333333333333
+avg_order_value_90d,5,15,0.3333333333333333
+sales_growth_log,2,15,0.13333333333333333
+merchant_take_rate_pct,2,15,0.13333333333333333

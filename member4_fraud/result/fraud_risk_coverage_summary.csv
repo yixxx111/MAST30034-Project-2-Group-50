@@ -7,7 +7,9 @@ consumer_and_knn,4414.0
 consumer_only,0.0
 knn_only,8.0
 no_information,0.0
+knn_out_of_distribution,1763.0
+median_knn_confidence,0.09836065573770492
 median_consumer_amount_coverage,1.0
 mean_consumer_amount_coverage,1.0
 median_observed_consumer_label_amount_coverage,0.8400394771856369
-mean_observed_consumer_label_amount_coverage,0.8537415568813675
+mean_observed_consumer_label_amount_coverage,0.8537415568813674
