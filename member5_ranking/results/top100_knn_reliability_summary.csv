@@ -3,3 +3,4 @@ top100_ood_count,12.0
 top100_ood_share,0.12
 top100_mean_knn_confidence,0.44196721311475407
 all_eligible_mean_knn_confidence,0.19361852874349514
+top20_ood_count,0.0
