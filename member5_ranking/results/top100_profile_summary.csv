@@ -1,0 +1,13 @@
+group,metric,label,unit,merchant_count,nonmissing_count,missing_count,p25,median,p75
+Top100,estimated_bnpl_revenue,Historical BNPL revenue proxy,AUD over observed history,100,100,0,89805.19763518602,214181.91447287216,396969.976427487
+Top100,unique_consumers,Historical customer reach,distinct consumers per merchant,100,100,0,9413.25,15737.0,20684.5
+Top100,monthly_revenue_cv,Monthly revenue volatility,CV; lower is more stable,100,100,0,0.18289958660813418,0.18699084665539675,0.19338075706424301
+Top100,normalized_monthly_revenue_trend,Historical revenue trend,normalized slope per month; not MoM %,100,100,0,0.014955215850636925,0.01573888821952185,0.0166706444095203
+Top100,fraud_risk_index,Relative fraud-risk signal,0-1 relative index; not probability,100,100,0,0.25699317724928294,0.2857534874778529,0.31593100964829446
+Top100,avg_transaction_value,Average order value,AUD per transaction,100,100,0,76.16308018537501,149.2814240450669,305.3048075087645
+Other eligible,estimated_bnpl_revenue,Historical BNPL revenue proxy,AUD over observed history,3926,3926,0,1426.0157711249208,4729.734597349325,20542.490210932257
+Other eligible,unique_consumers,Historical customer reach,distinct consumers per merchant,3926,3926,0,89.25,383.5,1729.0
+Other eligible,monthly_revenue_cv,Monthly revenue volatility,CV; lower is more stable,3926,3919,7,0.2217549272288255,0.3280216681099986,0.5877142324218764
+Other eligible,normalized_monthly_revenue_trend,Historical revenue trend,normalized slope per month; not MoM %,3926,3919,7,0.0067089346213259,0.0142027794042474,0.020543214704281852
+Other eligible,fraud_risk_index,Relative fraud-risk signal,0-1 relative index; not probability,3926,3926,0,0.3608405728730269,0.5171000088006723,0.662791007148022
+Other eligible,avg_transaction_value,Average order value,AUD per transaction,3926,3926,0,123.2454356678216,323.6699720751217,876.2300347567696
