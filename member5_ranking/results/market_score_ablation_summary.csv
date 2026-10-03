@@ -1,0 +1,2 @@
+comparison,top100_overlap,switch_in_count,switch_out_count,spearman_all_eligible,baseline_top100_abs_rank_change_median,baseline_top100_abs_rank_change_max,eligible_irsad_p25,eligible_irsad_median,eligible_irsad_p75,baseline_market_business_weight,no_market_business_weight,no_market_value_weight,no_market_customer_weight,no_market_growth_weight,no_market_stability_weight
+Baseline vs No-Market,82,18,18,0.9910342346091064,16.0,89,5.383429428493513,5.474345377373892,5.558009855623757,0.1,0,0.3333333333333333,0.2777777777777778,0.22222222222222224,0.16666666666666666
