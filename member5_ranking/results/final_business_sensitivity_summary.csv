@@ -1,0 +1,4 @@
+scenario_a,scenario_b,top100_overlap,spearman_rank_correlation,consistently_selected_count,selected_union_count,selection_sensitive_count,baseline_selected_sensitive_count,near_cutoff_sensitive_count,ood_and_sensitive_count,baseline_selected_ood_and_sensitive_count,baseline_top100_rank_range_median,baseline_top100_rank_range_max
+balanced,value_focused,88,0.9921569439238643,63,137,74,37,33,29,8,39.0,121
+balanced,growth_focused,75,0.9860973075500037,63,137,74,37,33,29,8,39.0,121
+value_focused,growth_focused,63,0.9638896777867316,63,137,74,37,33,29,8,39.0,121
