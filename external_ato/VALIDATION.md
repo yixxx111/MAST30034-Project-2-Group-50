@@ -92,6 +92,6 @@ scoring have not been done here; they are out of scope for this cleaning update.
 
 ## Backups
 
-A sibling directory to the group repo, `ato_backups_20260920/`, keeps the original Codex 2026-09-16
+A sibling directory to the group repo, `ato_backups_20260920/`, keeps the original 2026-09-16
 ZIP, Claude's modified ZIP, and the results from before this update. The original was restored from
 a still-existing `/private/tmp/ato-work` copy and has not overwritten the current code.
