@@ -1,0 +1,4 @@
+group,total_basis,displayed_total_aud,per_merchant_mean_aud,per_merchant_median_aud,random_total_mean_aud,random_total_median_aud,random_total_p05_aud,random_total_p95_aud,merchant_count_per_selection,eligible_merchant_count,random_simulation_count,random_seed,top100_to_group_total_ratio,top100_minus_group_total_aud
+Our Top 100,Observed total of formal Top100,25494830.346379004,254948.30346379004,214181.91447287216,,,,,100,4026,1000,20261009,1.0,0.0
+Typical Random 100,Median total across 1000 random selections,2330973.1778823375,,,2388748.833640138,2330973.1778823375,1570266.9402546291,3381642.0348451138,100,4026,1000,20261009,10.93741900948889,23163857.16849667
+Bottom 100,Observed total of lowest final-ranked 100,72911.54736753592,729.1154736753592,660.0487308010665,,,,,100,4026,1000,20261009,349.6679369299828,25421918.79901147
