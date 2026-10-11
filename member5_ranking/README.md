@@ -83,6 +83,37 @@ Run from the repository root or `member5_ranking/`:
 
 Both notebooks contain consistency assertions; do not reuse stale outputs after a failed run.
 
+### Presentation-only analysis
+
+`presentation_analysis.ipynb` contains stakeholder-facing visualisations and benchmarks used in the
+final presentation. It reads existing formal ranking outputs and does not modify eligibility, scoring
+weights, merchant ranks or official recommendation lists. It is presentation-only and is not part of
+the formal scoring pipeline.
+
+Current presentation analyses include:
+
+- Top 100 distribution across the five segments.
+- Top 100 vs Random 100 vs Bottom 100 historical fee-revenue comparison.
+
+### Business-value benchmark for presentation
+
+The formal Top 100 is compared with the Bottom 100 merchants under the unchanged final ranking and
+1,000 random samples of 100 merchants drawn from the same 4,026 eligible merchant pool.
+
+| Benchmark metric | Result |
+|---|---:|
+| Top 100 total historical BNPL fee-revenue proxy | A$25,494,830 |
+| Median Random 100 total | A$2,330,973 |
+| Mean Random 100 total | A$2,388,749 |
+| Random 100 5th–95th percentile | A$1,570,267–A$3,381,642 |
+| Bottom 100 total | A$72,912 |
+| Top 100 / median Random 100 | 10.94x |
+| Top 100 / Bottom 100 | 349.67x |
+
+This is an in-sample historical comparison. Revenue already contributes to the ranking, so this
+benchmark shows concentration of historical commercial value rather than independent validation of
+future performance. These values are historical fee-revenue proxies, not future revenue or future profit.
+
 ## Results (`member5_ranking/results/`)
 
 Existing outputs are retained:
@@ -99,6 +130,8 @@ Existing outputs are retained:
 | `final_top_100.csv` | Overall 100-slot shortlist |
 | `segment_top_10.csv` | Ten merchants in each of five industry views |
 | `segment_summary.csv` | Existing segment score summary |
+| `top100_vs_random_vs_bottom_summary.csv` | Stakeholder benchmark comparing historical fee-revenue proxy captured by the formal Top 100, median Random 100, and Bottom 100 |
+| `top100_random_simulation_distribution.csv` | Total historical fee-revenue proxy from 1,000 reproducible Random 100 samples |
 
 Essential additions:
 
@@ -106,25 +139,26 @@ Essential additions:
 |---|---|
 | `top100_profile_summary.csv` | How do selected merchants differ in raw historical value, reach, stability, growth, relative risk and ticket size? Includes sample/missing counts, median and Q1/Q3. |
 | `top100_score_gap.csv` | How do the selected score profiles differ? Descriptive, not independent feature importance. |
-| `merchant_case_studies.csv` | How should a strong, manual-review and non-selected boundary candidate be treated? |
+| `merchant_case_studies.csv` | How should a strong candidate, a candidate requiring targeted review, and a non-selected boundary candidate be treated? |
 | `merchant_case_score_contributions.csv` | How do the unchanged weighted components sum to each case's final score? Arithmetic explanation, not causal attribution. |
-| `segment_business_summary.csv` | What does each industry contribute, with eligible denominators, selection rates, Top10 raw profiles and review cautions? |
+| `segment_business_summary.csv` | What does each industry contribute, with eligible denominators, selection rates, Top 10 raw profiles and review cautions? |
 
 ## Stakeholder usage and limitations
 
-Prioritize commercially strong selected merchants with adequate observed history and stronger model
-support for ordinary due diligence. Selected OOD merchants, thin-history cases and membership-sensitive
-cases in existing sensitivity results merit manual review of current commercial/risk evidence. Flags
-are review cues, not new approval thresholds or automatic rejection rules. Non-OOD does not certify safety.
+Use the ranking as the primary prioritisation tool. Prioritize commercially strong selected merchants
+with adequate observed history and stronger model support for ordinary due diligence. Exceptional
+low-support, OOD, thin-history, preference-sensitive or boundary cases merit targeted review of current
+commercial and risk evidence. Flags are review cues, not new approval thresholds or automatic rejection
+rules. Non-OOD does not certify safety.
 
 The cases are Interdum Feugiat Sed Inc. (strong), Tellus Id Institute (selected but OOD), and Non Magna
 Nam PC (rank 101 reserve). Nisl Arcu Iaculis Incorporated (rank 77) was inspected but would duplicate the
 selected/OOD example; a genuinely non-selected case better explains the capacity boundary. A small score
 gap at rank 100 does not establish a meaningful probability difference or commercial unsuitability.
 
-All 50 segment-level Top10 merchants are already in the overall Top100. They are an **industry view of
+All 50 segment-level Top 10 merchants are already in the overall Top 100. They are an **industry view of
 the overall strong candidate pool, not 50 additional onboarding slots**. There are no industry-specific
-weights. Top10 medians describe selected leaders, not entire industries. Similar selected mean scores
+weights. Top 10 medians describe selected leaders, not entire industries. Similar selected mean scores
 cannot demonstrate absence of industry bias; selection-rate differences alone also do not prove bias.
 
 The original commercial-weight sensitivity is business-only (66 common merchants). Section 12 now
@@ -135,9 +169,9 @@ ranking, predict future profitability, or substitute for validation on future ou
 
 ## Useful diagnostics (sections 11–14 of ranking_summary.ipynb)
 
-Official recommendation outputs are **overall Top100 and Top10 within each of five segments**.
-Top20 files are retained for internal inspection only. Concentration Top5/10/20 denotes cumulative
-historical revenue shares within the already selected Top100, not additional recommendation lists.
+Official recommendation outputs are **overall Top 100 and Top 10 within each of five segments**.
+Top 20 files are retained for internal inspection only. Concentration Top 5/10/20 denotes cumulative
+historical revenue shares within the already selected Top 100, not additional recommendation lists.
 
 1. **Revenue-only comparator:** select 100 by historical `estimated_bnpl_revenue` in the same eligible
    pool. Compare whole lists and non-overlapping groups using medians, Q1/Q3 and missing counts.
@@ -150,7 +184,7 @@ historical revenue shares within the already selected Top100, not additional rec
    switchers and rank ranges. Near-cutoff means baseline ranks 80–120, an inspection window only.
    Review all selection-sensitive candidates plus current OOD/low-sample candidates. The list includes
    potential entrants and is not a recommendation to onboard extra merchants. OOD adds no penalty.
-3. **Concentration:** calculate largest 5/10/20 revenue shares within the existing Top100 and partition
+3. **Concentration:** calculate largest 5/10/20 revenue shares within the existing Top 100 and partition
    that same pool by the existing five segments. Historical exposure is not future profit exposure;
    no optimal diversification or acceptable risk threshold is claimed.
 4. **No-Market ablation:** set business Market weight to zero and proportionally redistribute its weight:
